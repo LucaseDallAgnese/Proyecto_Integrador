@@ -1,33 +1,32 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Product;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    // Mostrar todos los productos
+    // Listar productos
     public function index()
     {
         $products = Product::all();
-        return view('admin.productos.index', compact('products'));
+        return view('tienda.index', compact('products'));
     }
 
-    // Mostrar el formulario para crear un nuevo producto
+    // Mostrar formulario de creación
     public function create()
     {
-        return view('admin.productos.create');
+        return view('tienda.create');
     }
 
-    // Guardar un nuevo producto
+    // Guardar nuevo producto
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:100',
             'description' => 'nullable|string',
-            'price' => 'required|numeric',
+            'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'image' => 'nullable|string|max:255',
             'category_id' => 'nullable|exists:categories,id',
@@ -35,28 +34,28 @@ class ProductController extends Controller
 
         Product::create($request->all());
 
-        return redirect()->route('admin.productos.index')->with('success', 'Producto creado correctamente.');
+        return redirect()->route('products.index')->with('success', 'Producto creado exitosamente.');
     }
 
-    // Mostrar un producto específico
+    // Mostrar detalles de un producto
     public function show(Product $product)
     {
-        return view('admin.productos.show', compact('product'));
+        return view('tienda.show', compact('product'));
     }
 
-    // Mostrar el formulario para editar un producto
+    // Mostrar formulario de edición
     public function edit(Product $product)
     {
-        return view('admin.productos.edit', compact('product'));
+        return view('tienda.create', ['product' => $product]);
     }
 
-    // Actualizar un producto
+    // Actualizar producto
     public function update(Request $request, Product $product)
     {
         $request->validate([
             'name' => 'required|string|max:100',
             'description' => 'nullable|string',
-            'price' => 'required|numeric',
+            'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'image' => 'nullable|string|max:255',
             'category_id' => 'nullable|exists:categories,id',
@@ -64,13 +63,13 @@ class ProductController extends Controller
 
         $product->update($request->all());
 
-        return redirect()->route('admin.productos.index')->with('success', 'Producto actualizado correctamente.');
+        return redirect()->route('products.index')->with('success', 'Producto actualizado exitosamente.');
     }
 
-    // Eliminar un producto
+    // Eliminar producto
     public function destroy(Product $product)
     {
         $product->delete();
-        return redirect()->route('admin.productos.index')->with('success', 'Producto eliminado correctamente.');
+        return redirect()->route('products.index')->with('success', 'Producto eliminado exitosamente.');
     }
 }

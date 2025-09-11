@@ -32,14 +32,14 @@
             @forelse ($productosDestacados as $producto)
                 <div class="col-md-4 mb-4">
                     <div class="card h-100">
-                        @if($product->imagen_url)
-                            <img src="{{ $product->imagen_url }}" class="card-img-top" alt="{{ $product->nombre }}">
+                        @if($producto->image)
+                            <img src="{{ asset($producto->image) }}" class="card-img-top" alt="{{ $producto->name }}">
                         @endif
                         <div class="card-body">
-                            <h5 class="card-title">{{ $product->nombre }}</h5>
-                            <p class="card-text">{{ $product->descripcion }}</p>
-                            <p class="card-text"><strong>${{ number_format($product->precio, 2) }}</strong></p>
-                            <a href="{{ route('tienda.show', $product) }}" class="btn btn-primary">Ver producto</a>
+                            <h5 class="card-title">{{ $producto->name }}</h5>
+                            <p class="card-text">{{ $producto->description }}</p>
+                            <p class="card-text"><strong>${{ number_format($producto->price, 2) }}</strong></p>
+                            <a href="{{ route('products.show', $producto) }}" class="btn btn-primary">Ver producto</a>
                         </div>
                     </div>
                 </div>

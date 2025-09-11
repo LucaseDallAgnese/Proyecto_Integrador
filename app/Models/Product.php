@@ -15,11 +15,17 @@ class Product extends Model
         'description',
         'price',
         'stock',
+        'image',
+        'category_id',
     ];
 
     protected $casts = [
         'price' => 'float',
         'stock' => 'integer',
     ];
-
+    //Relacion con categoria
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 
 //@extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Producto>
-class ProductoFactory extends Factory
+class ProductFactory extends Factory
 {
         
 // @return array<string, mixed>
