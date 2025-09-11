@@ -13,8 +13,8 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 // == RUTAS PÚBLICAS (Cualquier visitante puede verlas) ==
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/tienda', [ProductoController::class, 'index'])->name('tienda.index');
-Route::get('/producto/{producto}', [ProductoController::class, 'show'])->name('tienda.show');
+Route::get('/tienda', [ProductController::class, 'index'])->name('products.index');
+Route::get('/product/{product}', [ProductController::class, 'show'])->name('products.show');
 
 // == RUTAS DE AUTENTICACIÓN (Login, Registro, etc.) ==
 // require __DIR__.'/auth.php'; // Descomenta si usas Breeze o Jetstream
@@ -41,15 +41,8 @@ Route::middleware(['auth'])->group(function () {
 
 // == RUTAS DE ADMINISTRADOR (Protegidas) ==
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-    // Dashboard principal del admin
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    
-    // Rutas para gestionar Productos (Crear, Leer, Actualizar, Borrar)
-    Route::resource('productos', AdminProductoController::class);
-    
-    // Rutas para gestionar Categorías
+    Route::resource('productos', AdminProductController::class);
     Route::resource('categorias', CategoriaController::class);
-
-    // Ruta para la página de inicio que muestra los productos
     Route::get('/', [HomeController::class, 'index'])->name('home');
 });
