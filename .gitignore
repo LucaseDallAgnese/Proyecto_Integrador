@@ -1,24 +1,47 @@
-*.log
-.DS_Store
-.env
-.env.backup
-.env.production
-.phpactor.json
-.phpunit.result.cache
-/.fleet
-/.idea
-/.nova
-/.phpunit.cache
-/.vscode
-/.zed
-/auth.json
+# Laravel & PHP
+/vendor
 /node_modules
-/public/build
-/public/hot
 /public/storage
 /storage/*.key
-/storage/pail
-/vendor
+/storage/app/public
+/storage/debugbar
+/storage/framework/cache
+/storage/framework/sessions
+/storage/framework/testing
+/storage/framework/views
+/storage/logs
+.env
+.env.*
+.phpunit.result.cache
+/.phpunit.cache
+
+# IDEs & Editors
+/.idea
+/.vscode
+.DS_Store
+Thumbs.db
+
+# Laravel Nova, Fleet, Zed, Sail, etc.
+/.nova
+/.fleet
+/.zed
+/.docker
+
+# Misc
+/public/hot
+/public/build
+/auth.json
 Homestead.json
 Homestead.yaml
+
+# OS generated
+.DS_Store
 Thumbs.db
+
+# Others
+.phpactor.json
+.env.backup
+.env.production
+
+# Coverage reports
+/coverage

@@ -1,39 +1,39 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="es">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    {{-- El título de la página será dinámico --}}
-    <title>@yield('title', 'TeraStore')</title>
-
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
-
-    {{-- Aquí es donde Laravel Vite incluirá tus archivos CSS y JS --}}
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title', 'Mi Tienda Online')</title> {{-- Título dinámico [12] --}}
+    @vite('resources/css/app.css') {{-- Para compilar los estilos de Tailwind CSS [1] --}}
 </head>
-<body class="font-sans antialiased">
-    
-    <header>
-        {{-- Aquí irá tu barra de navegación --}}
-        <nav>
-            <a href="{{ route('home') }}">Inicio</a>
-            <a href="{{ route('tienda.index') }}">Tienda</a>
-            {{-- Más enlaces aquí --}}
+<body class="bg-gray-100 font-sans antialiased">
+    <header class="bg-white shadow-md p-4">
+        <nav class="container mx-auto flex justify-between items-center">
+            <a href="{{ route('home') }}" class="text-2xl font-bold text-gray-800">Mi Tienda</a>
+            <div>
+                {{-- Aquí podrías poner enlaces a categorías, carrito, login/logout --}}
+                @auth {{-- Directiva de Blade para usuarios autenticados [13, 14] --}}
+                    <a href="/profile" class="text-gray-600 hover:text-gray-900 mr-4">Perfil</a>
+                    <form action="{{ route('logout') }}" method="POST" class="inline">
+                        @csrf
+                        <button type="submit" class="text-gray-600 hover:text-gray-900">Cerrar Sesión</button>
+                    </form>
+                @endauth
+                @guest {{-- Directiva de Blade para usuarios no autenticados [15, 16] --}}
+                    <a href="{{ route('login.show') }}" class="text-gray-600 hover:text-gray-900">Iniciar Sesión</a>
+                @endguest
+            </div>
         </nav>
     </header>
 
-    <main>
-        {{-- ESTA ES LA PARTE MÁGICA --}}
-        {{-- Aquí se insertará el contenido específico de cada página --}}
-        @yield('content')
+    <main class="container mx-auto mt-8 p-4">
+        @yield('content') {{-- Aquí se insertará el contenido específico de cada vista [12] --}}
     </main>
 
-    <footer>
-        {{-- Aquí irá tu pie de página --}}
-        <p>&copy; {{ date('Y') }} TeraStore. Todos los derechos reservados.</p>
+    <footer class="bg-gray-800 text-white text-center p-4 mt-8">
+        <p>&copy; {{ date('Y') }} Mi Tienda Online. Todos los derechos reservados.</p>
     </footer>
 
+    @vite('resources/js/app.js') {{-- Para compilar scripts de JS (si los tienes) --}}
 </body>
 </html>
