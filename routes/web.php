@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\CategoriaController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\LoginController;
 
 // == RUTAS PÚBLICAS ==
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -51,3 +52,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('categorias', CategoriaController::class);
     Route::get('/', [HomeController::class, 'index'])->name('home');
 });
+
+Route::get('/login', [LoginController::class, 'show'])->name('login.show');
+Route::post('/login', [LoginController::class, 'login'])->name('login.process');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
