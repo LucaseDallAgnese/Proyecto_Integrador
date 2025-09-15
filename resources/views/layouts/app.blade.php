@@ -31,7 +31,7 @@
     </main>
 
     <footer class="bg-gray-800 text-white text-center p-4 mt-8">
-        <p>&copy; {{ date('Y') }} Mi Tienda Online. Todos los derechos reservados.</p>
+        <p>&copy; {{ date('Y') }} TeraStore Todos los derechos reservados.</p>
     </footer>
 
     @vite('resources/js/app.js') {{-- Para compilar scripts de JS (si los tienes) --}}
