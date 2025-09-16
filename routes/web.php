@@ -12,7 +12,7 @@ use App\Http\Controllers\Admin\CategoriaController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\LoginController;
 
-// == RUTAS PÚBLICAS ==
+// RUTAS PÚBLICAS
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/tienda', [ProductController::class, 'index'])->name('products.index');
 Route::get('/product/{product}', [ProductController::class, 'show'])->name('products.show');
@@ -22,10 +22,7 @@ Route::get('/product/{product}/edit', [ProductController::class, 'edit'])->name(
 Route::put('/product/{product}', [ProductController::class, 'update'])->name('products.update');
 Route::delete('/product/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 
-// == RUTAS DE AUTENTICACIÓN (Login, Registro, etc.) ==
-// require __DIR__.'/auth.php'; // Descomenta si usas Breeze o Jetstream
-
-// == RUTAS PRIVADAS (Solo para usuarios que han iniciado sesión) ==
+// RUTAS PRIVADAS (Solo para usuarios que han iniciado sesión) 
 Route::middleware(['auth'])->group(function () {
     // Carrito de Compras
     Route::get('/carrito', [CartController::class, 'index'])->name('carrito.index');
@@ -45,7 +42,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });
 
-// == RUTAS DE ADMINISTRADOR (Protegidas) ==
+// RUTAS DE ADMINISTRADOR (Protegidas)
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('productos', AdminProductController::class);

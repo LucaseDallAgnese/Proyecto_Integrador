@@ -17,7 +17,7 @@ class ProductFactory extends Factory
             'price' => fake()->randomFloat(2, 10, 500),
             'stock' => fake()->numberBetween(1, 99),
             'image' => 'products/' . fake()->uuid() . '.jpg',
-            'category_id' => null, // O puedes asignar una categoría existente si tienes
+            'category_id' => null,
         ];
     }
 }
