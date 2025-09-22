@@ -1,12 +1,28 @@
 <?php
-// ...existing code...
 
-// RUTAS PÚBLICAS
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\CategoriaController;
+use App\Http\Controllers\LoginController;
+
+// RUTAS PÚBLICAS (Accesibles para todos)
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/tienda', [ProductController::class, 'index'])->name('products.index');
 Route::get('/product/{product}', [ProductController::class, 'show'])->name('products.show');
 
-// RUTAS PRIVADAS (Solo para usuarios que han iniciado sesión) 
+// RUTAS DE AUTENTICACIÓN
+Route::get('/login', [LoginController::class, 'show'])->name('login.show');
+Route::post('/login', [LoginController::class, 'login'])->name('login.process');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+
+// RUTAS PRIVADAS (Solo para usuarios que han iniciado sesión)
 Route::middleware(['auth'])->group(function () {
     // Carrito de Compras
     Route::get('/carrito', [CartController::class, 'index'])->name('carrito.index');
@@ -21,9 +37,6 @@ Route::middleware(['auth'])->group(function () {
     // Perfil del Usuario
     Route::get('/mi-cuenta', [PerfilController::class, 'index'])->name('perfil.index');
     Route::get('/mi-cuenta/pedidos', [PerfilController::class, 'pedidos'])->name('perfil.pedidos');
-
-    // Cerrar sesión
-    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });
 
 // RUTAS DE ADMINISTRADOR (Protegidas)
@@ -31,16 +44,4 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('productos', AdminProductController::class);
     Route::resource('categorias', CategoriaController::class);
-    Route::get('/', [HomeController::class, 'index'])->name('home');
-    // Rutas protegidas para productos
-    Route::post('/product', [ProductController::class, 'store'])->name('products.store');
-    Route::put('/product/{product}', [ProductController::class, 'update'])->name('products.update');
-    Route::delete('/product/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
-    Route::get('/product/create', [ProductController::class, 'create'])->name('products.create');
-    Route::get('/product/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
 });
-
-Route::get('/login', [LoginController::class, 'show'])->name('login.show');
-Route::post('/login', [LoginController::class, 'login'])->name('login.process');
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-// ...existing code...

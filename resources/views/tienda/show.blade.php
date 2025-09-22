@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-md-6">
             @if($product->image)
-                <img src="{{ asset($product->image) }}" class="img-fluid" alt="{{ $product->name }}">
+                <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid" alt="{{ $product->name }}">
             @endif
         </div>
         <div class="col-md-6">
@@ -15,6 +15,10 @@
             <p>{{ $product->description }}</p>
             <p><strong>Precio:</strong> ${{ number_format($product->price, 2) }}</p>
             <p><strong>Stock:</strong> {{ $product->stock }}</p>
+            <form action="{{ route('carrito.add', $product) }}" method="POST" style="display:inline;">
+                @csrf
+                <button type="submit" class="btn btn-success">Agregar al carrito</button>
+            </form>
             <a href="{{ route('products.index') }}" class="btn btn-secondary">Volver</a>
         </div>
     </div>

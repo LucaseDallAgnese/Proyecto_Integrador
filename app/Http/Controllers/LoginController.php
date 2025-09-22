@@ -7,13 +7,22 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    // Mostrar formulario de login
+    /**
+     * Muestra el formulario de login.
+     *
+     * @return \Illuminate\View\View
+     */
     public function show()
     {
         return view('auth.login');
     }
 
-    // Procesar login
+    /**
+     * Procesa la solicitud de login.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -23,6 +32,12 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
+            
+            // Lógica para redirigir al administrador
+            if (Auth::user()->hasPermission('acceso-admin-dashboard')) {
+                return redirect()->route('admin.dashboard');
+            }
+
             return redirect()->intended(route('home'));
         }
 
@@ -31,7 +46,12 @@ class LoginController extends Controller
         ])->onlyInput('email');
     }
 
-    // Cerrar sesión
+    /**
+     * Cierra la sesión del usuario.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function logout(Request $request)
     {
         Auth::logout();
