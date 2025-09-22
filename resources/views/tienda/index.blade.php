@@ -32,11 +32,8 @@
                 <td>{{ $product->category?->name ?? '-' }}</td>
                 <td>
                     <a href="{{ route('products.show', $product) }}">Ver</a>
-                    <a href="{{ route('products.edit', $product) }}">Editar</a>
                     <form action="{{ route('products.destroy', $product) }}" method="POST" style="display:inline;">
                         @csrf
-                        @method('DELETE')
-                        <button type="submit" onclick="return confirm('¿Seguro que deseas eliminar este producto?')">Eliminar</button>
                     </form>
                 </td>
             </tr>

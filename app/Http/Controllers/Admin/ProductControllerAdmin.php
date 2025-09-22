@@ -29,11 +29,17 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric',
             'stock' => 'required|integer|min:0',
-            'image' => 'nullable|string|max:255',
+            'image' => 'nullable|image|max:2048', // Cambiado a tipo archivo imagen
             'category_id' => 'nullable|exists:categories,id',
         ]);
 
-        Product::create($request->all());
+        $data = $request->except('image');
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('productos', 'public');
+        }
+
+        Product::create($data);
 
         return redirect()->route('admin.productos.index')->with('success', 'Producto creado correctamente.');
     }
@@ -58,11 +64,17 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric',
             'stock' => 'required|integer|min:0',
-            'image' => 'nullable|string|max:255',
+            'image' => 'nullable|image|max:2048', // Cambiado a tipo archivo imagen
             'category_id' => 'nullable|exists:categories,id',
         ]);
 
-        $product->update($request->all());
+        $data = $request->except('image');
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('productos', 'public');
+        }
+
+        $product->update($data);
 
         return redirect()->route('admin.productos.index')->with('success', 'Producto actualizado correctamente.');
     }

@@ -3,28 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Mi Tienda Online')</title> {{-- Título dinámico [12] --}}
+    <title>@yield('title', 'TeraStore')</title> {{-- Título dinámico [12] --}}
     @vite('resources/css/app.css') {{-- Para compilar los estilos de Tailwind CSS [1] --}}
 </head>
 <body class="bg-gray-100 font-sans antialiased">
     <header class="bg-white shadow-md p-4">
-        <nav class="container mx-auto flex justify-between items-center">
-            <a href="{{ route('home') }}" class="text-2xl font-bold text-gray-800">Mi Tienda</a>
-            <div>
-                {{-- Aquí podrías poner enlaces a categorías, carrito, login/logout --}}
-                @auth {{-- Directiva de Blade para usuarios autenticados [13, 14] --}}
-                    <a href="/profile" class="text-gray-600 hover:text-gray-900 mr-4">Perfil</a>
-                    <form action="{{ route('logout') }}" method="POST" class="inline">
-                        @csrf
-                        <button type="submit" class="text-gray-600 hover:text-gray-900">Cerrar Sesión</button>
-                    </form>
-                @endauth
-                @guest {{-- Directiva de Blade para usuarios no autenticados [15, 16] --}}
-                    <a href="{{ route('login.show') }}" class="text-gray-600 hover:text-gray-900">Iniciar Sesión</a>
-                @endguest
-            </div>
-        </nav>
-    </header>
+    <nav class="container mx-auto flex justify-between items-center">
+        <div class="flex items-center">
+            <img src="/images/logo.png" alt="Logo TeraStore" class="h-10 w-10 mr-3"> {{-- Cambia la ruta según tu imagen --}}
+            <a href="{{ route('home') }}" class="text-2xl font-bold text-gray-800">TeraStore</a>
+        </div>
+        <div>
+            {{-- Aquí podrías poner enlaces a categorías, carrito, login/logout --}}
+            @auth
+                <a href="/profile" class="text-gray-600 hover:text-gray-900 mr-4">Perfil</a>
+                <form action="{{ route('logout') }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" class="text-gray-600 hover:text-gray-900">Cerrar Sesión</button>
+                </form>
+            @endauth
+            @guest
+                <a href="{{ route('login.show') }}" class="text-gray-600 hover:text-gray-900">Iniciar Sesión</a>
+            @endguest
+        </div>
+    </nav>
+</header>
 
     <main class="container mx-auto mt-8 p-4">
         @yield('content') {{-- Aquí se insertará el contenido específico de cada vista [12] --}}

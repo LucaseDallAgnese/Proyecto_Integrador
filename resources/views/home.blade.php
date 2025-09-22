@@ -7,7 +7,7 @@
 
         {{-- Banner principal --}}
         <div class="mb-5">
-            <img src="/images/banner.jpg" class="img-fluid w-100" alt="Promoción principal">
+            <img src="/images/habitacion-gamer-en-navidad_3840x2160_xtrafondos.com.webp" class="img-fluid w-100" alt="Promoción principal">
         </div>
 
         {{-- Ventajas de la tienda --}}
