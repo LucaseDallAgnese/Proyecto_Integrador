@@ -11,7 +11,7 @@
     <nav class="container mx-auto flex justify-between items-center">
         <div class="flex items-center">
             <img src="/images/logo.png" alt="Logo TeraStore" class="h-10 w-10 mr-3"> {{-- Cambia la ruta según tu imagen --}}
-            <a href="{{ route('home') }}" class="text-2xl font-bold text-gray-800">TeraStore</a>
+            <a href="{{ Auth::check() && Auth::user()->hasPermission('acceso-admin-dashboard') ? route('admin.dashboard') : route('home') }}" class="text-2xl font-bold text-gray-800">TeraStore</a>
         </div>
         <div>
             {{-- Aquí podrías poner enlaces a categorías, carrito, login/logout --}}

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use Illuminate\Support\Facades\Storage; // Importa la clase Storage
 
 class ProductController extends Controller
 {
@@ -29,7 +30,7 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric',
             'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|max:2048', // Cambiado a tipo archivo imagen
+            'image' => 'nullable|image|max:2048',
             'category_id' => 'nullable|exists:categories,id',
         ]);
 
@@ -64,13 +65,18 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric',
             'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|max:2048', // Cambiado a tipo archivo imagen
+            'image' => 'nullable|image|max:2048',
             'category_id' => 'nullable|exists:categories,id',
         ]);
 
         $data = $request->except('image');
 
+        // Lógica para eliminar la imagen anterior si se sube una nueva
         if ($request->hasFile('image')) {
+            // Elimina la imagen anterior si existe
+            if ($product->image && Storage::disk('public')->exists($product->image)) {
+                Storage::disk('public')->delete($product->image);
+            }
             $data['image'] = $request->file('image')->store('productos', 'public');
         }
 
@@ -82,6 +88,11 @@ class ProductController extends Controller
     // Eliminar un producto
     public function destroy(Product $product)
     {
+        // Lógica para eliminar la imagen antes de eliminar el producto
+        if ($product->image && Storage::disk('public')->exists($product->image)) {
+            Storage::disk('public')->delete($product->image);
+        }
+        
         $product->delete();
         return redirect()->route('admin.productos.index')->with('success', 'Producto eliminado correctamente.');
     }
