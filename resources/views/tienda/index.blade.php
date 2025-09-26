@@ -24,13 +24,14 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($products as $product)
+                @foreach($products as $product)
                     <tr class="bg-white border-b hover:bg-gray-50">
                         <td class="py-4 px-6">
-                            @if($product->image)
-                                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-20 h-20 object-cover rounded">
-                            @endif
+                            <a href="{{ route('tienda.show', $product) }}">
+                                <img src="" alt="procesador">
+                            </a>
                         </td>
+
                         <td class="py-4 px-6 font-medium text-gray-900">{{ $product->name }}</td>
                         <td class="py-4 px-6">${{ number_format($product->price, 2) }}</td>
                         <td class="py-4 px-6">{{ $product->stock }}</td>
@@ -48,7 +49,7 @@
                     <tr class="bg-white border-b">
                         <td colspan="5" class="py-4 px-6 text-center text-gray-500">No hay productos.</td>
                     </tr>
-                @endforelse
+                @endforeach
             </tbody>
         </table>
     </div>

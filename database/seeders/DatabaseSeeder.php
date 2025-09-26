@@ -20,6 +20,11 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@admin.com',
             'password' => bcrypt('password'),
         ]);
+        $user = User::factory()->create([
+            'name' => 'User',
+            'email' => 'usuario@normal.com',
+            'password' => bcrypt('password'),
+        ]);
 
         // 2. Ejecutar los seeders principales
         $this->call([
