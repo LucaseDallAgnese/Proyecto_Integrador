@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Permission;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use App\Models\Permission;
 
 class PermissionSeeder extends Seeder
 {
@@ -15,18 +15,14 @@ class PermissionSeeder extends Seeder
      */
     public function run()
     {
-        // Limpiar la tabla antes de insertar
-        DB::table('permissions')->delete();
-        
-        // Crear los permisos
+        // Borra los registros respetando las claves foráneas
+        DB::table('permission_user')->delete();
+        Permission::query()->delete();
+
         $permissions = [
             ['name' => 'acceso-admin-dashboard'],
-            // Puedes agregar más permisos aquí en el futuro
-            // ['name' => 'editar-productos'],
-            // ['name' => 'eliminar-usuarios'],
         ];
 
-        // Insertar los permisos en la tabla
         foreach ($permissions as $permission) {
             Permission::create($permission);
         }
