@@ -18,11 +18,7 @@ class Product extends Model
         'image',
         'category_id',
     ];
-
-    protected $casts = [
-        'price' => 'float',
-        'stock' => 'integer',
-    ];
+    
     //Relacion con categoria
     public function category()
     {
