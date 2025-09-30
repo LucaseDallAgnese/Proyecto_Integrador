@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
-use Illuminate\Http\Request;
+use App\Http\Requests\CategoriaStoreRequest;
+use App\Http\Requests\CategoriaUpdateRequest;
 
 class CategoriaController extends Controller
 {
@@ -28,13 +29,9 @@ class CategoriaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CategoriaStoreRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:100',
-            'description' => 'nullable|string',
-        ]);
-        Category::create($request->all());
+        Category::create($request->validate());
         return redirect()->route('admin.categorias.index')->with('success', 'Categoría creada.');
     }
 
@@ -57,13 +54,9 @@ class CategoriaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Category $categoria)
+    public function update(CategoriaUpdateRequest $request, Category $categoria)
     {
-        $request->validate([
-            'name' => 'required|string|max:100',
-            'description' => 'nullable|string',
-        ]);
-        $categoria->update($request->all());
+        $categoria->update($request->validated());
         return redirect()->route('admin.categorias.index')->with('success', 'Categoría actualizada.');
     }
 
