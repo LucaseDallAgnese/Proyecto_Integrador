@@ -1,9 +1,9 @@
-<form action="{{ route('cart.products.add') }}" method="POST">
+<form action="{{ route('carrito.add', $product) }}" method="POST">
     @csrf
     <div>
         <label for="quantity">Cantidad:</label>
-        <input type="number" id="quantity" name="quantity" value="1" min="1" required>
-        <input type="hidden" name="product_id" value="{{ $product->id }}"> {{-- ID del producto actual --}}
+        <input type="number" id="quantity" name="quantity" value="{{old('quantity', 1}}" min="1" required>
+        <input type="hidden" name="product_id" value="{{ $product->id }}">
     </div>
     <button type="submit">Agregar al Carrito</button>
 </form>

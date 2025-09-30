@@ -1,24 +1,39 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Controllers\Admin;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Controllers\Controller;
+use App\Models\Product;
+use Illuminate\Suport\Facades\Storage;
+use App\Http\Requests\ProductStoreRequest;
+use App\Http\Reuqests\ProductUpdateRequest;
 
-class ProductStoreRequest extends FormRequest
+class ProductController extends Controller
 {
-    public function authorize(): boolval
+        public function store(ProductStoreRequest $request) // [MODIFICAR AQUÍ]
     {
-        return true;
+        $data = $request->validated();
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('productos', 'public');
+        }
+
+        Product::create($data);
+        return redirect()->route('admin.productos.index')->with('success', 'Producto creado correctamente.');
     }
-    public function rules(): array
+
+    public function update(ProductUpdateRequest $request, Product $product) // [MODIFICAR AQUÍ]
     {
-        return[
-            'name'=> 'required|string|max:100',
-            'description'=> 'nullable|string',
-            'price'=>'required|numeric',
-            'stock'=>'required|integer|min:0',
-            'image'=>'nullable|image|max:2048',
-            'category_id'=> 'nullable|exists:categories,id',
-        ];
+        $data = $request->validated();
+
+        if ($request->hasFile('image')) {
+            if ($product->image && Storage::disk('public')->exists($product->image)) {
+                Storage::disk('public')->delete($product->image);
+            }
+            $data['image'] = $request->file('image')->store('productos', 'public');
+        }
+
+        $product->update($data);
+        return redirect()->route('admin.productos.index')->with('success', 'Producto actualizado correctamente.');
     }
 }

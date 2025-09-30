@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Http\Requests\CartAddRequest;
 
 class CartController extends Controller
 {
@@ -17,27 +18,22 @@ class CartController extends Controller
     }
 
     // Agregar producto al carrito
-    public function add(Request $request, $productId)
+    public function add(CartAddRequest $request, $product)
     {
-        $product = Product::findOrFail($productId);
+        $quantity = ~request::validated('quantity');
         $cart = $request->session()->get('cart', []);
 
-        $quantity = $request->input('quantity', 1);
+        $newQuantityCart = ($cart[$product-id] ?? 0 ) + $quantity ;
 
         // Validar stock
-        if ($quantity > $product->stock) {
-            return back()->with('error', 'Not enough stock available.');
+        if ($newQuantityCart > $product->stock) {
+            return back()->with('error', 'No hay suficiente stock para la cantidad que desea agregar al carrito');
         }
 
-        if (isset($cart[$productId])) {
-            $cart[$productId] += $quantity;
-        } else {
-            $cart[$productId] = $quantity;
-        }
-
+        $cart[$product->id] = $newQuantityCart;
         $request->session()->put('cart', $cart);
-
-        return back()->with('success', 'Product added to cart!');
+        
+        return back()->with('success', 'Producto agregado al carrito!');
     }
 
     // Eliminar producto del carrito
@@ -47,7 +43,7 @@ class CartController extends Controller
         unset($cart[$productId]);
         $request->session()->put('cart', $cart);
 
-        return back()->with('success', 'Product removed from cart.');
+        return back()->with('success', 'Producto removido del carro de compras');
     }
 
     // Actualizar cantidad de un producto
