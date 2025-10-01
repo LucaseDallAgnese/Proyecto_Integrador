@@ -11,7 +11,7 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\CategoriaController;
 use App\Http\Controllers\LoginController;
 
-// =================== RUTAS PÚBLICAS (Accesibles para todos) ===================
+// =================== RUTAS PÚBLICAS
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/tienda', [ProductController::class, 'index'])->name('products.index');
 Route::get('/product/{product}', [ProductController::class, 'show'])->name('products.show');
