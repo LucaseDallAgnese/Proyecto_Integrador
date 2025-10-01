@@ -10,7 +10,7 @@
             <div class="bg-white rounded shadow p-4 flex flex-col items-center">
                 <a href="{{ route('products.show', $product) }}">
                     @if($product->image)
-                        <img src="{{ asset('images/' . $product->image) }}" alt="{{ $product->name }}" class="mb-2" width="120">
+                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="mb-2" width="120">
                     @else
                         <img src="https://via.placeholder.com/120x90?text=Sin+Imagen" alt="Sin imagen" class="mb-2">
                     @endif
