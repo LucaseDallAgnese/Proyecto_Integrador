@@ -8,7 +8,7 @@
     <div class="max-w-xl mx-auto bg-white rounded shadow p-6">
         <div class="flex flex-col items-center">
             @if($product->image)
-                <img src="{{ asset('images/' . $product->image) }}" alt="{{ $product->name }}" class="mb-4" width="200">
+                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="mb-4" width="200">
             @else
                 <img src="https://via.placeholder.com/200x150?text=Sin+Imagen" alt="Sin imagen" class="mb-4">
             @endif
