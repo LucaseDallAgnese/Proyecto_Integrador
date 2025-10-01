@@ -16,7 +16,7 @@
                     @endif
                 </a>
                 <div class="text-lg font-semibold mb-1">
-                    <a href="{{route('products.shows', $product }}" class="hover:text-blue-600"> {{ $product->name }} </a>
+                    <a href="{{route('products.show', $product }}" class="hover:text-blue-600"> {{ $product->name }} </a>
                 </div>
                 <div class="text-gray-600 mb-1">${{ number_format($product->price, 2) }}</div>
                 <div class="text-gray-500 mb-2">Stock: {{ $product->stock }}</div>

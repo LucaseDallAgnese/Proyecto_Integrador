@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
@@ -11,9 +10,9 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\CategoriaController;
 use App\Http\Controllers\LoginController;
 
-// =================== RUTAS PÚBLICAS
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/tienda', [ProductController::class, 'index'])->name('products.index');
+//Rutas publicas
+Route::get('/', [ProductController::class, 'index'])->name('home');
+Route::get('/tienda', [ProductController::class, 'shop'])->name('tienda.index');
 Route::get('/product/{product}', [ProductController::class, 'show'])->name('products.show');
 
 // =================== RUTAS DE AUTENTICACIÓN (Accesibles para todos) ===================
