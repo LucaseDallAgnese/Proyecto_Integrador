@@ -10,8 +10,14 @@ class ProductController extends Controller
     // Listar productos
     public function index()
     {
-        $products = Product::all();
-        return view('tienda.index', compact('products'));
+        $latestProducts = Product::latest()->take(8)->get();
+        
+        return view('tienda.index', ['productosDestacados' => $latestProducts]);
+    }
+
+    public function shop()
+    {
+        return view('tienda.shop', compact('products'));
     }
 
     // Mostrar detalles de un producto
