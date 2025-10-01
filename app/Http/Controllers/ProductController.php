@@ -12,17 +12,20 @@ class ProductController extends Controller
     {
         $latestProducts = Product::latest()->take(8)->get();
         
-        return view('tienda.index', ['productosDestacados' => $latestProducts]);
+        return view('tienda.index', ['products' => $latestProducts]);
     }
 
     public function shop()
     {
+        
         return view('tienda.shop', compact('products'));
     }
 
     // Mostrar detalles de un producto
     public function show(Product $product)
     {
+        
         return view('tienda.show', compact('product'));
+        dd($product);
     }
 }
