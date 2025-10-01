@@ -16,7 +16,7 @@
             <p class="mb-2">{{ $product->description }}</p>
             <p class="mb-2"><strong>Precio:</strong> ${{ number_format($product->price, 2) }}</p>
             <p class="mb-4"><strong>Stock:</strong> {{ $product->stock }}</p>
-            <a href="{{ route('products.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white px-4 py-2 rounded">Volver</a>
+            <a href="{{ route('home') }}" class="bg-gray-500 hover:bg-gray-700 text-white px-4 py-2 rounded">Volver</a>
         </div>
     </div>
 </div>
