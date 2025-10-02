@@ -3,40 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'TeraStore')</title> {{-- Título dinámico [12] --}}
-    @vite('resources/css/app.css') {{-- Para compilar los estilos de Tailwind CSS [1] --}}
+    <title>@yield('title', 'TeraStore')</title> 
+    @vite('resources/css/app.css')
 </head>
 <body class="bg-gray-100 font-sans antialiased">
-    <header class="bg-white shadow-md p-4">
-    <nav class="container mx-auto flex justify-between items-center">
-        <div class="flex items-center">
-            <img src="/images/logo.png" alt="Logo TeraStore" class="h-10 w-10 mr-3"> {{-- Cambia la ruta según tu imagen --}}
-            <a href="{{ Auth::check() && Auth::user()->hasPermission('acceso-admin-dashboard') ? route('admin.dashboard') : route('home') }}" class="text-2xl font-bold text-gray-800">TeraStore</a>
-        </div>
-        <div>
-            {{-- Aquí podrías poner enlaces a categorías, carrito, login/logout --}}
-            @auth
-                <a href="/profile" class="text-gray-600 hover:text-gray-900 mr-4">Perfil</a>
-                <form action="{{ route('logout') }}" method="POST" class="inline">
-                    @csrf
-                    <button type="submit" class="text-gray-600 hover:text-gray-900">Cerrar Sesión</button>
-                </form>
-            @endauth
-            @guest
-                <a href="{{ route('login') }}" class="text-gray-600 hover:text-gray-900">Iniciar Sesión</a>
-            @endguest
-        </div>
-    </nav>
-</header>
+    {{-- =============================================================== --}}
+    {{--                 BARRA DE NAVEGACIÓN MODIFICADA                  --}}
+    {{-- =============================================================== --}}
+    <header class="absolute top-0 left-0 w-full z-10 p-4"> {{-- Posición absoluta y z-index --}}
+        <nav class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center">
+                <img src="/images/logo.png" alt="Logo TeraStore" class="h-10 w-10 mr-3">
+                <a href="{{ route('products.index') }}" class="text-2xl font-bold text-white" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.7);">TeraStore</a> {{-- Texto blanco --}}
+            </div>
+            <div>
+                @auth
+                    {{-- Simplificado para mejor visibilidad --}}
+                    <a href="#" class="text-white hover:text-gray-300 mr-4 font-semibold">Mi Cuenta</a>
+                    <form action="{{ route('logout') }}" method="POST" class="inline">
+                        @csrf
+                        <button type="submit" class="text-white hover:text-gray-300 font-semibold">Cerrar Sesión</button>
+                    </form>
+                @endauth
+                @guest
+                    <a href="{{ route('login') }}" class="text-white hover:text-gray-300 font-semibold">Iniciar Sesión</a>
+                @endguest
+            </div>
+        </nav>
+    </header>
 
-    <main class="container mx-auto mt-8 p-4">
-        @yield('content') {{-- Aquí se insertará el contenido específico de cada vista [12] --}}
+    {{-- El <main> ya no necesita margen superior porque el contenido de la página lo manejará --}}
+    <main>
+        @yield('content')
     </main>
 
-    <footer class="bg-gray-800 text-white text-center p-4 mt-8">
+    <footer class="bg-gray-800 text-white text-center p-4">
         <p>&copy; {{ date('Y') }} TeraStore Todos los derechos reservados.</p>
     </footer>
 
-    @vite('resources/js/app.js') {{-- Para compilar scripts de JS (si los tienes) --}}
+    @vite('resources/js/app.js')
 </body>
 </html>
