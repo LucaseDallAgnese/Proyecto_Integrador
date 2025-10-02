@@ -1,56 +1,50 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'TeraStore')</title>
-    @vite('resources/css/app.css')
-</head>
-<body class="bg-gray-100 font-sans antialiased">
+<header class="bg-white shadow-md">
+    <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center py-4">
+            <a href="{{ route('home') }}" class="text-2xl font-bold text-blue-600">
+                TeraStore
+            </a>
 
-    <header class="absolute top-0 left-0 w-full z-10 p-4">
-        <nav class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center">
-                <img src="/images/logo.png" alt="Logo TeraStore" class="h-10 w-10 mr-3">
-                <a href="{{ route('products.index') }}" class="text-2xl font-bold text-white" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.7);">TeraStore</a>
+            <div class="w-1/3">
+                <form action="{{ route('tienda.index') }}" method="GET">
+                    <input 
+                        type="text" 
+                        name="search" 
+                        placeholder="Buscar productos..." 
+                        class="w-full px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value="{{ request('search') }}"
+                    >
+                </form>
             </div>
 
-            {{-- MENÚ DE NAVEGACIÓN CORREGIDO CON LÓGICA DE ROLES --}}
-            <div>
-                @auth
-                    {{-- SI EL USUARIO ES ADMIN, MUESTRA ESTOS ENLACES --}}
-                    @if(Auth::user()->rol === 'admin')
-                        <a href="{{ route('admin.dashboard') }}" class="text-white hover:text-gray-300 mr-4 font-semibold">Dashboard</a>
-                        <a href="{{ route('admin.productos.index') }}" class="text-white hover:text-gray-300 mr-4 font-semibold">Gestionar Productos</a>
-
-                    {{-- SI ES OTRO USUARIO, MUESTRA ESTOS OTROS --}}
-                    @else
-                        <a href="#" class="text-white hover:text-gray-300 mr-4 font-semibold">Mi Perfil</a>
-                        <a href="{{ route('cart.index') }}" class="text-white hover:text-gray-300 mr-4 font-semibold">Carrito</a>
+            <div class="flex items-center space-x-6">
+                <a href="{{ route('carrito.detalle') }}" class="relative text-gray-600 hover:text-blue-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    @if(session('cart') && count(session('cart')) > 0)
+                        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                            {{ count(session('cart')) }}
+                        </span>
                     @endif
+                </a>
 
-                    {{-- Botón de Cerrar Sesión para TODOS los usuarios logueados --}}
-                    <form action="{{ route('logout') }}" method="POST" class="inline">
-                        @csrf
-                        <button type="submit" class="text-white hover:text-gray-300 font-semibold">Cerrar Sesión</button>
-                    </form>
-
-                @elseguest
-                    {{-- SI NO HAY SESIÓN INICIADA --}}
-                    <a href="{{ route('login') }}" class="text-white hover:text-gray-300 font-semibold">Iniciar Sesión</a>
-                @endauth
+                @guest
+                    <a href="{{ route('login') }}" class="text-gray-600 hover:text-blue-600">Iniciar sesión</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600">Registrarse</a> {{-- Asegúrate de tener esta ruta --}}
+                @else
+                    {{-- Dropdown para usuario logueado --}}
+                    <div class="relative">
+                        <button class="flex items-center text-gray-600 focus:outline-none">
+                            {{ Auth::user()->name }}
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        {{-- Aquí iría el menú desplegable con enlaces a 'Mi Perfil' y 'Cerrar Sesión' --}}
+                    </div>
+                @endguest
             </div>
-        </nav>
-    </header>
-
-    <main>
-        @yield('content')
-    </main>
-
-    <footer class="bg-gray-800 text-white text-center p-4">
-        <p>&copy; {{ date('Y') }} TeraStore Todos los derechos reservados.</p>
-    </footer>
-
-    @vite('resources/js/app.js')
-</body>
-</html>
+        </div>
+    </div>
+</header>

@@ -18,9 +18,9 @@ Route::post('/carrito/eliminar', [CartController::class, 'remove'])->name('cart.
 Route::post('/carrito/vaciar', [CartController::class, 'clear'])->name('cart.clear');
 
 // Ruta Principal
-Route::get('/', [ProductController::class, 'index'])->name('products.index');
+Route::get('/', [ProductController::class, 'index'])->name('tienda.index');
 //para ver el detalle de un producto
-Route::get('/product/{product}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/tienda/{product}', [ProductController::class, 'show'])->name('tienda.show');
 
 // Rutas de Autenticación
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
