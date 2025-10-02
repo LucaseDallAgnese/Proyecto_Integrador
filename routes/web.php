@@ -24,7 +24,7 @@ Route::get('/product/{product}', [ProductController::class, 'show'])->name('prod
 
 // Rutas de Autenticación
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'do_login']);
+Route::post('/login', [LoginController::class, 'do_login'])->name('login.process');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Rutas del Carrito de Compras
