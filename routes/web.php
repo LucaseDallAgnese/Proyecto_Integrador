@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductController as TiendaProductController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
@@ -10,21 +11,25 @@ use App\Http\Controllers\CartController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\CheckoutController;
 
-// Ruta Principal
-Route::get('/', HomeController::class)->name('home');
+// Rutas del Carrito de Compras
+Route::get('/carrito', [CartController::class, 'index'])->name('cart.index');
+Route::post('/carrito/agregar', [CartController::class, 'add'])->name('carrito.add');
+Route::post('/carrito/eliminar', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/carrito/vaciar', [CartController::class, 'clear'])->name('cart.clear');
 
-// Rutas de la Tienda
-Route::get('/tienda', [TiendaProductController::class, 'index'])->name('tienda.index');
-Route::get('/tienda/{product}', [TiendaProductController::class, 'show'])->name('tienda.show');
+// Ruta Principal
+Route::get('/', [ProductController::class, 'index'])->name('products.index');
+//para ver el detalle de un producto
+Route::get('/product/{product}', [ProductController::class, 'show'])->name('products.show');
 
 // Rutas de Autenticación
-Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('login', [LoginController::class, 'do_login']);
-Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'do_login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Rutas del Carrito de Compras
 Route::get('/carrito', [CartController::class, 'index'])->name('cart.index');
-Route::post('/carrito/agregar', [CartController::class, 'add'])->name('cart.add');
+Route::post('/carrito/agregar', [CartController::class, 'add'])->name('carrito.add');
 Route::post('/carrito/eliminar', [CartController::class, 'remove'])->name('cart.remove');
 Route::post('/carrito/vaciar', [CartController::class, 'clear'])->name('cart.clear');
 

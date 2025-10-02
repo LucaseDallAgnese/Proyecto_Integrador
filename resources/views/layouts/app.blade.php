@@ -23,7 +23,7 @@
                 </form>
             @endauth
             @guest
-                <a href="{{ route('login.show') }}" class="text-gray-600 hover:text-gray-900">Iniciar Sesión</a>
+                <a href="{{ route('login') }}" class="text-gray-600 hover:text-gray-900">Iniciar Sesión</a>
             @endguest
         </div>
     </nav>
