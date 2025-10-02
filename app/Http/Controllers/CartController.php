@@ -4,69 +4,45 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
-use App\Http\Requests\CartAddRequest;
+use Darryldecode\Cart\Facades\CartFacade as Cart;
 
 class CartController extends Controller
 {
-    // Mostrar el carrito
-    public function index(Request $request)
+    public function index()
     {
-        $cart = $request->session()->get('cart', []);
-        $products = Product::whereIn('id', array_keys($cart))->get();
-
-        return view('cart.index', compact('cart', 'products'));
+        $cartItems = Cart::getContent();
+        return view('carrito.detalle', compact('cartItems'));
     }
 
-    // Agregar producto al carrito
-    public function add(CartAddRequest $request, $product)
+    public function add(Request $request)
     {
-        $quantity = ~request::validated('quantity');
-        $cart = $request->session()->get('cart', []);
-
-        $newQuantityCart = ($cart[$product-id] ?? 0 ) + $quantity ;
-
-        // Validar stock
-        if ($newQuantityCart > $product->stock) {
-            return back()->with('error', 'No hay suficiente stock para la cantidad que desea agregar al carrito');
-        }
-
-        $cart[$product->id] = $newQuantityCart;
-        $request->session()->put('cart', $cart);
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:1'
+        ]);
         
-        return back()->with('success', 'Producto agregado al carrito!');
+        $product = Product::find($request->product_id);
+
+        Cart::add([
+            'id' => $product->id,
+            'name' => $product->name,
+            'price' => $product->price,
+            'quantity' => $request->quantity,
+            'attributes' => []
+        ]);
+
+        return redirect()->route('cart.index')->with('success', 'Producto agregado al carrito!');
     }
 
-    // Eliminar producto del carrito
-    public function remove(Request $request, $productId)
+    public function remove(Request $request)
     {
-        $cart = $request->session()->get('cart', []);
-        unset($cart[$productId]);
-        $request->session()->put('cart', $cart);
-
-        return back()->with('success', 'Producto removido del carro de compras');
+        Cart::remove($request->id);
+        return redirect()->route('cart.index')->with('success', 'Producto eliminado del carrito.');
     }
 
-    // Actualizar cantidad de un producto
-    public function update(Request $request, $productId)
+    public function clear()
     {
-        $product = Product::findOrFail($productId);
-        $quantity = $request->input('quantity', 1);
-
-        if ($quantity < 1 || $quantity > $product->stock) {
-            return back()->with('error', 'Invalid quantity.');
-        }
-
-        $cart = $request->session()->get('cart', []);
-        $cart[$productId] = $quantity;
-        $request->session()->put('cart', $cart);
-
-        return back()->with('success', 'Cart updated.');
-    }
-
-    // Vaciar el carrito
-    public function clear(Request $request)
-    {
-        $request->session()->forget('cart');
-        return back()->with('success', 'Cart cleared.');
+        Cart::clear();
+        return redirect()->route('cart.index')->with('success', 'El carrito ha sido vaciado.');
     }
 }

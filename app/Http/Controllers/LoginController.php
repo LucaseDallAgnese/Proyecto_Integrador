@@ -7,56 +7,38 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    /**
-     * Muestra el formulario de login.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function show()
+    public function showLoginForm()
     {
         return view('auth.login');
     }
 
-    /**
-     * Procesa la solicitud de login.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function login(Request $request)
+    public function do_login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+        $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials, $request->filled('remember'))) {
+        if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            
-            // Lógica para redirigir al administrador
-            if (Auth::user()->hasPermission('acceso-admin-dashboard')) {
-                return redirect()->route('admin.dashboard');
+
+            // Redireccionar según el rol del usuario
+            if (Auth::user()->rol == 'admin') {
+                return redirect()->intended('/admin/dashboard');
             }
 
-            return redirect()->intended(route('home'));
+            return redirect()->intended('/');
         }
 
         return back()->withErrors([
-            'email' => 'Las credenciales no coinciden.',
+            'email' => 'Las credenciales no coinciden con nuestros registros.',
         ])->onlyInput('email');
     }
 
-    /**
-     * Cierra la sesión del usuario.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function logout(Request $request)
     {
         Auth::logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('login.show');
+
+        return redirect('/');
     }
 }

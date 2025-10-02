@@ -1,21 +1,13 @@
-<?php
+@extends('layouts.app')
 
-namespace App\Http\Controllers;
+@section('title', 'Inicio')
 
-use App\Models\Product;
-use Illuminate\Http\Request;
-
-class HomeController extends Controller
-{
-    /**
-     * Muestra la página de inicio con los productos destacados.
-     */
-    public function index()
-    {
-        // Obtenemos los 10 productos más recientes de la base de datos
-        $products = Product::latest()->take(10)->get();
-
-        // Pasamos la variable $products a la vista 'home'
-        return view('home', compact('products'));
-    }
-}
+@section('content')
+    <div class="container mx-auto text-center py-20">
+        <h1 class="text-4xl font-bold mb-4">Bienvenido a TeraStore</h1>
+        <p class="text-lg text-gray-600 mb-8">Tu tienda de componentes de PC de confianza.</p>
+        <a href="{{ route('tienda.index') }}" class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">
+            Ir a la Tienda
+        </a>
+    </div>
+@endsection
