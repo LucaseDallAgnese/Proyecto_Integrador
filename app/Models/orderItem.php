@@ -2,24 +2,28 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
+// Convención: Nombre de clase y archivo en PascalCase (OrderItem)
 class orderItem extends Model
 {
-    public function up(): void
-    {
-        Schema::create('order_items', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('order_id');
-            $table->unsignedBigInteger('product_id');
-            $table->integer('quantity');
-            $table->decimal('price', 10, 2);
-            $table->timestamps();
+    use HasFactory;
 
-            $table->foreign('order_id')->references('id')->on('orders');
-            $table->foreign('product_id')->references('id')->on('products');
-        });
+    /**
+     * Relación: Un item de orden pertenece a una orden.
+     */
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+    /**
+     * Relación: Un item de orden pertenece a un producto.
+     * ¡Esta es la función que soluciona el error!
+     */
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
     }
 }

@@ -15,13 +15,13 @@ Route::get('/', [ProductController::class, 'index'])->name('home');
 Route::get('/tienda', [ProductController::class, 'shop'])->name('tienda.index');
 Route::get('/product/{product}', [ProductController::class, 'show'])->name('products.show');
 
-// =================== RUTAS DE AUTENTICACIÓN (Accesibles para todos) ===================
+//Rutas de autenticacion
 Route::get('/login', [LoginController::class, 'show'])->name('login.show');
 Route::post('/login', [LoginController::class, 'login'])->name('login.process');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 
-// =================== RUTAS DE USUARIO LOGUEADO (auth) ===================
+//usuario registrado
 Route::middleware(['auth'])->group(function () {
     // Carrito de Compras
     Route::get('/carrito', [CartController::class, 'index'])->name('carrito.index');
@@ -38,9 +38,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/mi-cuenta/pedidos', [PerfilController::class, 'pedidos'])->name('perfil.pedidos');
 });
 
-// =================== RUTAS DE ADMINISTRADOR (auth + rol admin) ===================
+//administrador
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/admin/productos', [ProductControllerStore::class, 'index'])->name('admin.products.index');
     Route::resource('productos', AdminProductController::class);
     Route::resource('categorias', CategoriaController::class);
 });

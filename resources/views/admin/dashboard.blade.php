@@ -3,27 +3,57 @@
 @section('title', 'Panel de Administración')
 
 @section('content')
-<div class="container mx-auto mt-8 p-4">
-    <h1 class="text-3xl font-bold text-gray-800 mb-4">Panel de Administración</h1>
-    <p class="text-gray-600 mb-8">Bienvenido, <span class="font-semibold">{{ Auth::user()->name }}</span>. Desde aquí puedes gestionar todo tu sitio web.</p>
-    
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Tarjeta para gestionar productos -->
-        <a href="{{ route('admin.productos.index') }}" class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
-            <h2 class="text-xl font-bold text-gray-800 mb-2">Gestionar Productos</h2>
-            <p class="text-gray-600">Agregar, editar o eliminar productos de la tienda.</p>
-        </a>
-        
-        <!-- Tarjeta para ver la tienda como cliente -->
-        <a href="{{ route('products.index') }}" class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300" target="_blank">
-            <h2 class="text-xl font-bold text-gray-800 mb-2">Ver la Tienda</h2>
-            <p class="text-gray-600">Ver la página como un cliente para ver cómo se ven los cambios.</p>
-        </a>
+<div class="container">
+    <h1 class="my-4">Panel de Administración</h1>
 
-        <!-- Tarjeta para gestionar categorías -->
-        <a href="{{ route('admin.categorias.index') }}" class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
-            <h2 class="text-xl font-bold text-gray-800 mb-2">Gestionar Categorías</h2>
-            <p class="text-gray-600">Organizar y administrar las categorías de los productos.</p>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-header">Usuarios</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ $usersCount }}</h5>
+                    <p class="card-text">Usuarios registrados</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header">Productos</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ $productsCount }}</h5>
+                    <p class="card-text">Productos en la tienda</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-header">Órdenes</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ $ordersCount }}</h5>
+                    <p class="card-text">Órdenes realizadas</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="mt-5">Últimas 5 Órdenes</h3>
+    <div class="list-group">
+        @forelse ($latestOrders as $order)
+            <a href="#" class="list-group-item list-group-item-action">
+                Orden #{{ $order->id }} - {{ $order->user->name }} - ${{ $order->total }}
+            </a>
+        @empty
+            <p>No hay órdenes recientes.</p>
+        @endforelse
+    </div>
+
+    <h3 class="mt-5">Gestión</h3>
+    <div class="list-group">
+        <a href="{{ route('admin.products.index') }}" class="list-group-item list-group-item-action">
+            Gestionar Productos
+        </a>
+        <a href="#" class="list-group-item list-group-item-action">
+            Gestionar Categorías
         </a>
     </div>
 </div>
