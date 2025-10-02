@@ -41,9 +41,9 @@ Route::middleware('auth')->group(function () {
 });
 
 // Rutas del Panel de Administración (Protegidas)
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Usamos un controlador de recursos para los productos
-    Route::resource('productos', ProductController::class)->names(['admin.producto']);
+    Route::resource('productos', AdminProductController::class);
 });

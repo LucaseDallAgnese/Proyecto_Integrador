@@ -28,7 +28,7 @@ class ProductController extends Controller
             $query->where('category_id', $request->category_id);
         }
 
-        // Pagina los resultados (ej. 10 por página) y los ordena por el más reciente
+        // Pagina los resultados y los ordena por el más reciente
         $products = $query->latest()->paginate(10); 
         
         // Obtiene todas las categorías para el dropdown del filtro
@@ -55,20 +55,20 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required',
-            'price' => 'required|numeric',
-            'stock' => 'required|integer',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
             'category_id' => 'required|exists:categories,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        $product = new Product($request->except('image'));
+        $data = $request->except('image');
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('products', 'public');
-            $product->image = $path;
+            $data['image'] = $path;
         }
 
-        $product->save();
+        Product::create($data);
 
         return redirect()->route('admin.productos.index')->with('success', 'Producto creado exitosamente.');
     }
@@ -76,36 +76,42 @@ class ProductController extends Controller
     /**
      * Muestra el formulario para editar un producto existente.
      */
-    public function edit(Product $product)
+    public function edit(Product $producto) // <-- Laravel inyecta el producto automáticamente
     {
         $categories = Category::all();
-        return view('admin.productos.edit', compact('product', 'categories'));
+        
+        // La clave está aquí: pasamos el producto encontrado a la vista.
+        // La variable en la vista se llamará 'product'.
+        return view('admin.productos.edit', [
+            'product' => $producto, 
+            'categories' => $categories
+        ]);
     }
 
     /**
      * Actualiza un producto existente en la base de datos.
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, Product $producto) // <-- También se inyecta aquí
     {
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required',
-            'price' => 'required|numeric',
-            'stock' => 'required|integer',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
             'category_id' => 'required|exists:categories,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        $product->fill($request->except('image'));
+        $data = $request->except('image');
 
         if ($request->hasFile('image')) {
             // Opcional: Eliminar imagen anterior si existe
-            // Storage::disk('public')->delete($product->image);
+            // Storage::disk('public')->delete($producto->image);
             $path = $request->file('image')->store('products', 'public');
-            $product->image = $path;
+            $data['image'] = $path;
         }
 
-        $product->save();
+        $producto->update($data);
 
         return redirect()->route('admin.productos.index')->with('success', 'Producto actualizado exitosamente.');
     }
@@ -113,9 +119,14 @@ class ProductController extends Controller
     /**
      * Elimina un producto de la base de datos.
      */
-    public function destroy(Product $product)
+    public function destroy(Product $producto) // <-- Y aquí también
     {
-        $product->delete();
+        // Opcional: Eliminar la imagen del almacenamiento al borrar el producto
+        // if ($producto->image) {
+        //     Storage::disk('public')->delete($producto->image);
+        // }
+        
+        $producto->delete();
         return redirect()->route('admin.productos.index')->with('success', 'Producto eliminado exitosamente.');
     }
 }

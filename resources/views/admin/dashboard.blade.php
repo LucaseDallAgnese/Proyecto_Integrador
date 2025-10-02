@@ -1,60 +1,57 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Panel de Administración')
+@section('page-title', 'Dashboard')
 
 @section('content')
-<div class="container">
-    <h1 class="my-4">Panel de Administración</h1>
-
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card text-white bg-primary mb-3">
-                <div class="card-header">Usuarios</div>
-                <div class="card-body">
-                    <h5 class="card-title">{{ $usersCount }}</h5>
-                    <p class="card-text">Usuarios registrados</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card text-white bg-success mb-3">
-                <div class="card-header">Productos</div>
-                <div class="card-body">
-                    <h5 class="card-title">{{ $productsCount }}</h5>
-                    <p class="card-text">Productos en la tienda</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card text-white bg-info mb-3">
-                <div class="card-header">Órdenes</div>
-                <div class="card-body">
-                    <h5 class="card-title">{{ $ordersCount }}</h5>
-                    <p class="card-text">Órdenes realizadas</p>
-                </div>
-            </div>
-        </div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h3 class="text-lg font-semibold text-gray-600">Usuarios Registrados</h3>
+        <p class="text-3xl font-bold text-gray-800 mt-2">{{ $usersCount }}</p>
     </div>
-
-    <h3 class="mt-5">Últimas 5 Órdenes</h3>
-    <div class="list-group">
-        @forelse ($latestOrders as $order)
-            <a href="#" class="list-group-item list-group-item-action">
-                Orden #{{ $order->id }} - {{ $order->user->name }} - ${{ $order->total }}
-            </a>
-        @empty
-            <p>No hay órdenes recientes.</p>
-        @endforelse
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h3 class="text-lg font-semibold text-gray-600">Productos Totales</h3>
+        <p class="text-3xl font-bold text-gray-800 mt-2">{{ $productsCount }}</p>
     </div>
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h3 class="text-lg font-semibold text-gray-600">Órdenes Realizadas</h3>
+        <p class="text-3xl font-bold text-gray-800 mt-2">{{ $ordersCount }}</p>
+    </div>
+</div>
 
-    <h3 class="mt-5">Gestión</h3>
-    <div class="list-group">
-        <a href="{{ route('admin.products.index') }}" class="list-group-item list-group-item-action">
-            Gestionar Productos
-        </a>
-        <a href="#" class="list-group-item list-group-item-action">
-            Gestionar Categorías
-        </a>
+<div class="mt-8 bg-white p-6 rounded-lg shadow-lg">
+    <h3 class="text-xl font-semibold text-gray-700 mb-4">Últimas 5 Órdenes</h3>
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white">
+            <thead>
+                <tr>
+                    <th class="py-2 px-4 border-b">ID Orden</th>
+                    <th class="py-2 px-4 border-b">Usuario</th>
+                    <th class="py-2 px-4 border-b">Total</th>
+                    <th class="py-2 px-4 border-b">Fecha</th>
+                    <th class="py-2 px-4 border-b">Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($latestOrders as $order)
+                    <tr class="hover:bg-gray-100">
+                        <td class="py-2 px-4 border-b text-center">{{ $order->id }}</td>
+                        <td class="py-2 px-4 border-b">{{ $order->user->name }}</td>
+                        <td class="py-2 px-4 border-b text-right">${{ number_format($order->total, 2) }}</td>
+                        <td class="py-2 px-4 border-b text-center">{{ $order->created_at->format('d/m/Y') }}</td>
+                        <td class="py-2 px-4 border-b text-center">
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $order->status == 'completed' ? 'bg-green-200 text-green-800' : 'bg-yellow-200 text-yellow-800' }}">
+                                {{ ucfirst($order->status) }}
+                            </span>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="py-4 px-4 text-center text-gray-500">No hay órdenes recientes.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
 @endsection
