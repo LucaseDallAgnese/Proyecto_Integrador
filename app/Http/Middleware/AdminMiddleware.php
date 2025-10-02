@@ -16,7 +16,6 @@ class AdminMiddleware
     if (!Auth::check() || Auth::user()->role !== 'admin'){
         abort(403, 'Acceso no autorizado. Se requiere rol de administrador.');
 
-
     }
 return $next($request);
 }    

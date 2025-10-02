@@ -50,5 +50,5 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Usamos un controlador de recursos para los productos
-    Route::resource('productos', AdminProductController::class);
+    Route::resource('productos', \App\Http\Controllers\Admin\ProductController::class);
 });

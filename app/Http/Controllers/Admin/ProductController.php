@@ -50,65 +50,38 @@ class ProductController extends Controller
     /**
      * Guarda un nuevo producto en la base de datos.
      */
-    public function store(Request $request)
+ public function store(StoreProductRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
-
-        $data = $request->except('image');
+        $data = $request->validated(); // Obtenemos solo los datos validados
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('products', 'public');
-            $data['image'] = $path;
+            $data['image'] = $request->file('image')->store('products', 'public');
         }
 
         Product::create($data);
 
         return redirect()->route('admin.productos.index')->with('success', 'Producto creado exitosamente.');
     }
-
-    /**
-     * Muestra el formulario para editar un producto existente.
-     */
-    public function edit(Product $producto) // <-- Laravel inyecta el producto automáticamente
+    
+    // El método edit ya estaba correcto
+    public function edit(Product $producto)
     {
         $categories = Category::all();
-        
-        // La clave está aquí: pasamos el producto encontrado a la vista.
-        // La variable en la vista se llamará 'product'.
         return view('admin.productos.edit', [
-            'product' => $producto, 
+            'product' => $producto,
             'categories' => $categories
         ]);
     }
 
-    /**
-     * Actualiza un producto existente en la base de datos.
-     */
-    public function update(Request $request, Product $producto) // <-- También se inyecta aquí
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
 
-        $data = $request->except('image');
+    public function update(UpdateProductRequest $request, Product $producto)
+    {
+        $data = $request->validated();
 
         if ($request->hasFile('image')) {
-            // Opcional: Eliminar imagen anterior si existe
+            // Opcional: Eliminar la imagen anterior del almacenamiento
             // Storage::disk('public')->delete($producto->image);
-            $path = $request->file('image')->store('products', 'public');
-            $data['image'] = $path;
+            $data['image'] = $request->file('image')->store('products', 'public');
         }
 
         $producto->update($data);
