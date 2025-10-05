@@ -11,6 +11,8 @@ use App\Http\Controllers\CartController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
 // Rutas del Carrito de Compras
 Route::get('/carrito', [CartController::class, 'index'])->name('cart.index');
@@ -31,6 +33,12 @@ Route::post('/login', [LoginController::class, 'do_login'])->name('login.process
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/registro', [RegisterController::class, 'create'])->name('register');
 Route::post('/registro', [RegisterController::class, 'store'])->name('register.store');
+
+//Rutas de Recuperación de Contraseña
+Route::get('olvide-mi-contrasena', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('olvide-mi-contrasena', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('restablecer-contrasena/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('restablecer-contrasena', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 // Rutas del Carrito de Compras
 Route::prefix('carrito')->name('carrito.')->group(function () {
