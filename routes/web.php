@@ -31,7 +31,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Rutas del Carrito de Compras
 Route::prefix('carrito')->name('carrito.')->group(function () {
-    Route::get('/', [CartController::class, 'detalle'])->name('detalle');
+    Route::get('/', [CartController::class, 'showCart'])->name('detalle');
     Route::post('/agregar', [CartController::class, 'agregar'])->name('agregar');
     Route::post('/eliminar', [CartController::class, 'eliminar'])->name('eliminar');
     Route::post('/actualizar', [CartController::class, 'actualizar'])->name('actualizar');

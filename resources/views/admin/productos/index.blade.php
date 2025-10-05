@@ -1,79 +1,85 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 
-@section('title', 'Gestionar Productos')
-@section('page-title', 'Productos')
+@section('title', 'Tienda')
 
 @section('content')
-    <div class="bg-white p-6 rounded-lg shadow-lg">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-semibold text-gray-700">Lista de Productos</h2>
-            <a href="{{ route('admin.productos.create') }}" class="bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-                Agregar Producto
-            </a>
-        </div>
-
-        <form action="{{ route('admin.productos.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <input 
-                type="text" 
-                name="search" 
-                placeholder="Buscar por nombre..." 
-                class="w-full px-4 py-2 border rounded-lg"
-                value="{{ request('search') }}"
-            >
-            <select name="category_id" class="w-full px-4 py-2 border rounded-lg">
-                <option value="">Filtrar por categoría</option>
-                @foreach($categories as $category)
-                    <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                        {{ $category->name }}
-                    </option>
-                @endforeach
-            </select>
-            <div class="flex gap-2">
-                <button type="submit" class="w-full bg-gray-800 text-white py-2 px-4 rounded-lg hover:bg-gray-700">Filtrar</button>
-                <a href="{{ route('admin.productos.index') }}" class="w-full text-center bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-400">Limpiar</a>
+<div class="container mx-auto px-4">
+    
+    {{-- ============================================= --}}
+    {{--                  Hero Section                 --}}
+    {{-- ============================================= --}}
+    <div class="relative bg-cover bg-center rounded-lg overflow-hidden h-80 mb-8" style="background-image: url('{{ asset('images/habitacion-gamer-en-navidad_3840x2160_xtrafondos.com.webp') }}');">
+        <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div class="text-center">
+                <h1 class="text-white text-4xl lg:text-5xl font-bold mb-4">Los mejores componentes</h1>
+                <p class="text-gray-200 text-lg">Equipa tu PC con lo último en tecnología.</p>
             </div>
-        </form>
-
-        <div class="overflow-x-auto">
-            <table class="min-w-full bg-white">
-                <thead class="bg-gray-800 text-white">
-                    <tr>
-                        <th class="py-3 px-4 uppercase font-semibold text-sm">ID</th>
-                        <th class="py-3 px-4 uppercase font-semibold text-sm">Nombre</th>
-                        <th class="py-3 px-4 uppercase font-semibold text-sm">Precio</th>
-                        <th class="py-3 px-4 uppercase font-semibold text-sm">Stock</th>
-                        <th class="py-3 px-4 uppercase font-semibold text-sm">Categoría</th>
-                        <th class="py-3 px-4 uppercase font-semibold text-sm">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody class="text-gray-700">
-                    @forelse($products as $product)
-                        <tr class="border-b">
-                            <td class="py-3 px-4">{{ $product->id }}</td>
-                            <td class="py-3 px-4">{{ $product->name }}</td>
-                            <td class="py-3 px-4">${{ number_format($product->price, 2) }}</td>
-                            <td class="py-3 px-4">{{ $product->stock }}</td>
-                            <td class="py-3 px-4">{{ $product->category->name ?? 'N/A' }}</td>
-                            <td class="py-3 px-4 flex gap-2">
-                                <a href="{{ route('admin.productos.edit', $product) }}" class="text-blue-500 hover:text-blue-700">Editar</a>
-                                <form action="{{ route('admin.productos.destroy', $product) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este producto?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-500 hover:text-red-700">Eliminar</button>
-                                </form>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="text-center py-4">No se encontraron productos.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        <div class="mt-6">
-            {{ $products->links() }}
         </div>
     </div>
+
+    {{-- ============================================= --}}
+    {{--              Filtro de Categorías             --}}
+    {{-- ============================================= --}}
+    <div class="mb-8">
+        <h2 class="text-2xl font-bold mb-4">Categorías</h2>
+        <div class="flex space-x-4 overflow-x-auto pb-4">
+            <a href="{{ route('tienda.index') }}" 
+               class="flex-shrink-0 px-4 py-2 rounded-full font-semibold transition-colors {{ !request('category_id') ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-200' }}">
+                Todos
+            </a>
+            @foreach ($categories as $category)
+                <a href="{{ route('tienda.index', ['category_id' => $category->id]) }}" 
+                   class="flex-shrink-0 px-4 py-2 rounded-full font-semibold transition-colors {{ request('category_id') == $category->id ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-200' }}">
+                    {{ $category->name }}
+                </a>
+            @endforeach
+        </div>
+    </div>
+
+    {{-- ============================================= --}}
+    {{--           Título y Cuadrícula de Productos     --}}
+    {{-- ============================================= --}}
+    <h1 class="text-3xl font-bold text-center mb-8">{{ $pageTitle ?? 'Nuestros Productos' }}</h1>
+
+    @if($products->count() > 0)
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            @foreach ($products as $product)
+                <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
+                    <a href="{{ route('tienda.show', $product) }}">
+                        <img src="{{ asset('storage/' . $product->image) }}" alt="Imagen de {{ $product->name }}" class="w-full h-48 object-cover">
+                    </a>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-2 truncate">{{ $product->name }}</h3>
+                        <p class="text-gray-800 font-bold text-xl mb-4">${{ number_format($product->price, 2) }}</p>
+                        
+                        <div class="flex flex-col space-y-2">
+                             <form action="{{ route('carrito.agregar') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                                    Agregar al carrito
+                                </button>
+                            </form>
+                            
+                            <a href="{{ route('tienda.show', $product) }}" class="w-full bg-gray-200 text-gray-800 text-center py-2 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+                                Ver detalles
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        {{-- Paginación --}}
+        <div class="mt-10">
+            {{ $products->appends(request()->query())->links() }}
+        </div>
+    @else
+        <div class="text-center bg-white p-10 rounded-lg shadow-md">
+            <h2 class="text-2xl font-semibold mb-4">No se encontraron productos</h2>
+            <p class="text-gray-600">Intenta con otra búsqueda o selecciona una categoría diferente.</p>
+        </div>
+    @endif
+</div>
 @endsection
