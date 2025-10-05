@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 // Convención: Nombre de clase y archivo en PascalCase (OrderItem)
-class orderItem extends Model
+class OrderItem extends Model
 {
     use HasFactory;
 
