@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\RegisterController;
 
 // Rutas del Carrito de Compras
 Route::get('/carrito', [CartController::class, 'index'])->name('cart.index');
@@ -28,6 +29,8 @@ Route::get('/tienda', [ProductController::class, 'index'])->name('tienda.index')
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'do_login'])->name('login.process');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::get('/registro', [RegisterController::class, 'create'])->name('register');
+Route::post('/registro', [RegisterController::class, 'store'])->name('register.store');
 
 // Rutas del Carrito de Compras
 Route::prefix('carrito')->name('carrito.')->group(function () {
