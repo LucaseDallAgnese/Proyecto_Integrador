@@ -14,7 +14,7 @@ class CartController extends Controller
         return view('carrito.detalle', compact('cartItems'));
     }
 
-    public function add(Request $request)
+    public function agregar(Request $request)
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
@@ -31,7 +31,7 @@ class CartController extends Controller
             'attributes' => []
         ]);
 
-        return redirect()->route('cart.index')->with('success', 'Producto agregado al carrito!');
+        return redirect()->route('carrito.')->with('success', 'Producto agregado al carrito!');
     }
 
     public function remove(Request $request)

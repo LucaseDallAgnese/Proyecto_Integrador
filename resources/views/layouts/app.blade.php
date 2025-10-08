@@ -39,7 +39,6 @@
 
                 @guest
                     <a href="{{ route('login') }}" class="hover:text-blue-200 transition-colors">Iniciar sesión</a>
-                    {{-- Asegúrate de tener una ruta llamada 'register' --}}
                     <a href="{{ route('register') }}" class="hover:text-blue-200 transition-colors">Registrarse</a> 
                 @else
                     {{-- Dropdown para usuario logueado --}}
