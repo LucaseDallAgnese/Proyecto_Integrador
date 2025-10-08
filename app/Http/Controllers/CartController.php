@@ -31,7 +31,7 @@ class CartController extends Controller
             'attributes' => []
         ]);
 
-        return redirect()->route('carrito.')->with('success', 'Producto agregado al carrito!');
+        return redirect()->route('carrito.detalle')->with('success', 'Producto agregado al carrito!');
     }
 
     public function remove(Request $request)

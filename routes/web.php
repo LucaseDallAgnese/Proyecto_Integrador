@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ProductController as TiendaProductController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\CartController;
@@ -13,12 +12,6 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-
-// Rutas del Carrito de Compras
-Route::get('/carrito', [CartController::class, 'index'])->name('cart.index');
-Route::post('/carrito/agregar', [CartController::class, 'add'])->name('carrito.add');
-Route::post('/carrito/eliminar', [CartController::class, 'remove'])->name('cart.remove');
-Route::post('/carrito/vaciar', [CartController::class, 'clear'])->name('cart.clear');
 
 // Ruta Principal
 Route::get('/', [ProductController::class, 'index'])->name('home');
@@ -40,13 +33,14 @@ Route::post('olvide-mi-contrasena', [ForgotPasswordController::class, 'sendReset
 Route::get('restablecer-contrasena/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('restablecer-contrasena', [ResetPasswordController::class, 'reset'])->name('password.update');
 
-// Rutas del Carrito de Compras
+// Rutas del Carrito de Compras (¡CORREGIDAS Y UNIFICADAS!)
 Route::prefix('carrito')->name('carrito.')->group(function () {
-    Route::get('/', [CartController::class, 'showCart'])->name('detalle');
+    Route::get('/', [CartController::class, 'index'])->name('detalle'); // Apunta a index()
     Route::post('/agregar', [CartController::class, 'agregar'])->name('agregar');
-    Route::post('/eliminar', [CartController::class, 'eliminar'])->name('eliminar');
-    Route::post('/actualizar', [CartController::class, 'actualizar'])->name('actualizar');
-    Route::post('/vaciar', [CartController::class, 'vaciar'])->name('vaciar');
+    Route::post('/eliminar', [CartController::class, 'remove'])->name('eliminar'); // Apunta a remove()
+    Route::post('/vaciar', [CartController::class, 'clear'])->name('vaciar'); // Apunta a clear()
+    // Puedes agregar la ruta para actualizar si la necesitas
+    // Route::post('/actualizar', [CartController::class, 'actualizar'])->name('actualizar');
 });
 
 //Rutas de compra (solo los usuarios logueados pueden comprar)
