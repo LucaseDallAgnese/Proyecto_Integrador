@@ -5,9 +5,6 @@
 @section('content')
 <div class="container mx-auto px-4">
     
-    {{-- ============================================= --}}
-    {{--                  Hero Section                 --}}
-    {{-- ============================================= --}}
     <div class="relative bg-cover bg-center rounded-lg overflow-hidden h-80 mb-8" style="background-image: url('{{ asset('images/habitacion-gamer-en-navidad_3840x2160_xtrafondos.com.webp') }}');">
         <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div class="text-center">
@@ -17,9 +14,6 @@
         </div>
     </div>
 
-    {{-- ============================================= --}}
-    {{--              Filtro de Categorías             --}}
-    {{-- ============================================= --}}
     <div class="mb-8">
         <h2 class="text-2xl font-bold mb-4">Categorías</h2>
         <div class="flex space-x-4 overflow-x-auto pb-4">
@@ -36,9 +30,6 @@
         </div>
     </div>
 
-    {{-- ============================================= --}}
-    {{--           Título y Cuadrícula de Productos     --}}
-    {{-- ============================================= --}}
     <h1 class="text-3xl font-bold text-center mb-8">{{ $pageTitle ?? 'Nuestros Productos' }}</h1>
 
     @if($products->count() > 0)

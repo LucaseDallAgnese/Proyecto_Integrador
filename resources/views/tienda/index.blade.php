@@ -24,8 +24,8 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             @foreach ($products as $product)
                 <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
-                    <a href="{{ route('tienda.show', $product) }}">
-                        <td><img src="{{ asset('storage/' . $product->image) }}" ...></td>
+                    <a href="{{ route('tienda.show', $product) }}">   
+                    <img src="{{ asset('storage/' . $product->image) }}" alt="Imagen de {{ $product->name }}" class="w-full h-48 object-cover">
                     </a>
                     <div class="p-4">
                         <h3 class="text-lg font-semibold mb-2 truncate">{{ $product->name }}</h3>
@@ -68,7 +68,9 @@
             {{ $products->appends(request()->query())->links() }}
         </div>
     @else
-        {{-- ... (Mensaje de "No se encontraron productos" sin cambios) ... --}}
+        <div class="text-center py-16">
+            <h2 class="text-xl text-gray-600">No se encontraron productos que coincidan con tu búsqueda.</h2>
+        </div>
     @endif
 </div>
 @endsection
