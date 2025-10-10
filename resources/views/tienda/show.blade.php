@@ -32,9 +32,15 @@
                     <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ $product->name }}</h1>
                     <p class="text-gray-600 mb-4">{{ $product->category->name ?? 'Sin categoría' }}</p>
 
-                    <p class="text-gray-700 text-base mb-4">{{ $product->description }}</p>
+                    @if($product->discount > 0)
+                    <p class="text-2xl text-gray-500 line-through mb-2">${{ number_format($product->price, 2) }}</p>
+                    <p class="text-4xl font-bold text-red-600 mb-4">
+                    ${{ number_format($product->price * (1 - $product->discount / 100), 2) }}
+                    <span class="text-lg text-green-500 align-top">{{ $product->discount }}% OFF</span>
+                    </p>
+                    @else
                     <p class="text-3xl font-bold text-gray-900 mb-4">${{ number_format($product->price, 2) }}</p>
-                    <p class="text-gray-600 mb-4">Stock disponible: <span class="font-bold">{{ $product->stock }}</span> unidades</p>
+                    @endifspan> unidades</p>
                     
                     <form action="{{ route('carrito.agregar') }}" method="POST" class="mt-4">
                         @csrf

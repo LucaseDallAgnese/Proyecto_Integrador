@@ -39,6 +39,7 @@
                 @enderror
             </div>
 
+            {{--precio--}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                     <label for="price" class="block text-gray-700 text-sm font-bold mb-2">Precio</label>
@@ -47,6 +48,17 @@
                         <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
                     @enderror
                 </div>
+
+                {{--descuento--}}
+                <div>
+                    <label for="discount" class="block text-gray-700 text-sm font-bold mb-2">Descuento (%)</label>
+                    <input type="number" name="discount" id="discount" class="shadow appearance-none border @error('discount')          border-red-500 @enderror rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none            focus:shadow-outline" step="0.01" value="{{ old('discount', 0) }}" min="0" max="100">
+                    @error('discount')
+                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{--stock--}}
                 <div>
                     <label for="stock" class="block text-gray-700 text-sm font-bold mb-2">Stock</label>
                     <input type="number" name="stock" id="stock" class="shadow appearance-none border @error('stock') border-red-500 @enderror rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="{{ old('stock') }}" required>

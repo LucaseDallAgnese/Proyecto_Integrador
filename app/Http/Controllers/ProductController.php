@@ -3,21 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use App\Models\Category; 
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
+    /**
+     * Muestra la lista de productos, priorizando los que tienen descuento.
+     */
     public function index(Request $request)
     {
-        // ... (tu código de filtros se queda igual) ...
         $query = Product::query();
 
+        // Aplicar filtro de búsqueda
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
+        // Aplicar filtro de categoría
         if ($request->has('category_id') && $request->category_id != '') {
             $query->where('category_id', $request->category_id);
         }
@@ -25,23 +29,21 @@ class ProductController extends Controller
         $isFiltered = $request->filled('search') || $request->filled('category_id');
 
         if ($isFiltered) {
-            // Esto ya estaba correcto
-            $products = $query->paginate(20);
+            // Si hay filtros, ordena primero por descuento y luego por más nuevos
+            $products = $query->orderByRaw('discount > 0 DESC')->latest()->paginate(20);
             $pageTitle = "Resultados de la Búsqueda";
         } else {
-            //
-            // AQUÍ ESTÁ EL CAMBIO
-            // En lugar de get(), usamos paginate() para que siempre sea un objeto paginable.
-            //
+            // Si no hay filtros, muestra los más vendidos, priorizando descuentos
             $products = Product::select('products.*', DB::raw('SUM(order_items.quantity) as total_sold'))
                 ->leftJoin('order_items', 'products.id', '=', 'order_items.product_id')
                 ->groupBy('products.id')
+                ->orderByRaw('discount > 0 DESC') // <-- ORDENA POR DESCUENTO
                 ->orderByDesc('total_sold')
-                ->paginate(20); // <-- CAMBIA ->take(20)->get() POR ->paginate(20)
-            
+                ->paginate(20);
+
             $pageTitle = "Productos Destacados";
         }
-        
+
         $categories = Category::all();
 
         return view('tienda.index', [
@@ -52,7 +54,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Muestra los detalles de un producto específico.
+     * Muestra la página de detalle de un producto específico.
      */
     public function show(Product $product)
     {

@@ -9,22 +9,23 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('products', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->decimal('price', 13, 2);
-            $table->integer('stock')->default(0);
-            $table->string('image')->nullable();
-            $table->unsignedBigInteger('category_id')->nullable();
-            $table->timestamps();
-            $table->softDeletes();
+  public function up(): void
+{
+    Schema::create('products', function (Blueprint $table) {
+        $table->id();
+        $table->string('name');
+        $table->text('description')->nullable();
+        $table->decimal('price', 13, 2);
+        $table->decimal('discount', 5, 2)->default(0); // <-- AGREGA ESTA LÍNEA
+        $table->integer('stock')->default(0);
+        $table->string('image')->nullable();
+        $table->unsignedBigInteger('category_id')->nullable();
+        $table->timestamps();
+        $table->softDeletes();
 
-            $table->foreign('category_id')->references('id')->on('categories');
-        });
-    }
+        $table->foreign('category_id')->references('id')->on('categories');
+    });
+}
 
     /**
      * Reverse the migrations.
