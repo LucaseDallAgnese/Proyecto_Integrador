@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -13,7 +12,6 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 
-// Ruta Principal
 Route::get('/', [ProductController::class, 'index'])->name('home');
 //para ver el detalle de un producto
 Route::get('/tienda/{product}', [ProductController::class, 'show'])->name('tienda.show');
