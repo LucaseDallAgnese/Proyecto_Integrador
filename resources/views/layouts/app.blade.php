@@ -8,9 +8,6 @@
 </head>
 <body class="bg-gray-100 font-sans antialiased">
     
-    {{-- ============================================= --}}
-    {{--                  Header Principal             --}}
-    {{-- ============================================= --}}
     <header class="bg-blue-800 shadow-md text-white">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <a href="{{ route('home') }}" class="text-3xl font-bold">TeraStore</a>
@@ -65,9 +62,7 @@
         </div>
     </header>
 
-    {{-- ============================================= --}}
-    {{--           Barra de Navegación de Categorías   --}}
-    {{-- ============================================= --}}
+        {{--barra de navegacion--}}
     <nav class="bg-blue-700 shadow-md">
         <div class="container mx-auto px-4 py-3">
             <div class="flex flex-wrap gap-x-6 gap-y-2 justify-center text-white text-lg">
@@ -84,17 +79,13 @@
             </div>
         </div>
     </nav>
-
-    {{-- ============================================= --}}
-    {{--                   Contenido Principal         --}}
-    {{-- ============================================= --}}
+    {{-- Contenido Principal --}}
     <main class="py-8">
         @yield('content')
     </main>
 
-    {{-- ============================================= --}}
-    {{--                       Footer                  --}}
-    {{-- ============================================= --}}
+    {{-- Footer --}}
+
     <footer class="bg-blue-800 text-white py-6 mt-12">
         <div class="container mx-auto px-4 text-center">
             <p>&copy; {{ date('Y') }} TeraStore. Todos los derechos reservados.</p>

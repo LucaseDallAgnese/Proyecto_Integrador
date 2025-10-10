@@ -1,85 +1,95 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 
-@section('title', 'Modificar Producto')
-@section('page-title', 'Modificar Producto: ' . $product->name)
+@section('title', 'Editar Producto')
 
 @section('content')
-<form action="{{ route('admin.productos.update', $product->id) }}" method="POST" enctype="multipart/form-data">
-    @csrf
-    @method('PUT')
+<div class="container mx-auto mt-8 p-4">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Editar Producto: {{ $product->name }}</h1>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {{-- Columna Principal (Izquierda) --}}
-        <div class="lg:col-span-2">
-            <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
-                <h3 class="text-xl font-semibold text-gray-700 mb-4">Nombre y Descripción</h3>
-                
-                {{-- Nombre del Producto --}}
-                <div class="mb-4">
-                    <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Nombre del Producto</label>
-                    <input type="text" name="name" id="name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="{{ old('name', $product->name) }}" required>
-                </div>
-
-                {{-- Descripción --}}
-                <div>
-                    <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Descripción</label>
-                    <textarea name="description" id="description" rows="10" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">{{ old('description', $product->description) }}</textarea>
-                </div>
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        @if ($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <strong class="font-bold">¡Error!</strong>
+                <span class="block sm:inline">Por favor, corrige los siguientes problemas.</span>
             </div>
-        </div>
+        @endif
 
-        {{-- Columna Lateral (Derecha) --}}
-        <div>
-            {{-- Sección de Precios y Stock --}}
-            <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
-                <h3 class="text-xl font-semibold text-gray-700 mb-4">Precio y Stock</h3>
+        <form action="{{ route('admin.productos.update', $product) }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
 
-                {{-- Precio --}}
-                <div class="mb-4">
+            <div class="mb-4">
+                <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Nombre</label>
+                <input type="text" name="name" id="name" class="shadow appearance-none border @error('name') border-red-500 @enderror rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="{{ old('name', $product->name) }}" required>
+                @error('name')
+                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="mb-4">
+                <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Descripción</label>
+                <textarea name="description" id="description" rows="4" class="shadow appearance-none border @error('description') border-red-500 @enderror rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>{{ old('description', $product->description) }}</textarea>
+                @error('description')
+                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
                     <label for="price" class="block text-gray-700 text-sm font-bold mb-2">Precio</label>
-                    <input type="number" name="price" id="price" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" step="0.01" value="{{ old('price', $product->price) }}" required>
+                    <input type="number" name="price" id="price" class="shadow appearance-none border @error('price') border-red-500 @enderror rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" step="0.01" value="{{ old('price', $product->price) }}" required>
+                    @error('price')
+                        <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
-
-                {{-- Precio de Descuento (Campo nuevo del diseño) --}}
-                {{-- Nota: Para que funcione, necesitas agregar la columna a tu tabla 'products' y lógica en el controlador --}}
-                <div class="mb-4">
-                    <label for="discount_price" class="block text-gray-700 text-sm font-bold mb-2">Precio de Descuento (Opcional)</label>
-                    <input type="number" name="discount_price" id="discount_price" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" step="0.01" value="{{ old('discount_price', $product->discount_price ?? '') }}">
-                </div>
-                
-                {{-- Stock --}}
                 <div>
                     <label for="stock" class="block text-gray-700 text-sm font-bold mb-2">Stock</label>
-                    <input type="number" name="stock" id="stock" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="{{ old('stock', $product->stock) }}" required>
+                    <input type="number" name="stock" id="stock" class="shadow appearance-none border @error('stock') border-red-500 @enderror rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="{{ old('stock', $product->stock) }}" required>
+                    @error('stock')
+                        <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
 
-            {{-- Sección de Imagen --}}
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h3 class="text-xl font-semibold text-gray-700 mb-4">Imagen del Producto</h3>
-                
-                {{-- Imagen Actual --}}
-                @if ($product->image)
-                    <div class="mb-4">
-                        <p class="block text-gray-700 text-sm font-bold mb-2">Imagen Actual:</p>
-                        <img src="{{ asset('storage/' . $product->image) }}" alt="Imagen de {{ $product->name }}" class="w-full h-auto rounded-lg">
-                    </div>
+            <div class="mb-4">
+                <label for="category_id" class="block text-gray-700 text-sm font-bold mb-2">Categoría</label>
+                <select name="category_id" id="category_id" class="shadow appearance-none border @error('category_id') border-red-500 @enderror rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                    <option value="">Selecciona una categoría</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" 
+                            {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('category_id')
+                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">Imagen Actual</label>
+                @if($product->image)
+                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="h-32 w-32 object-cover rounded mb-4">
+                @else
+                    <p class="text-sm text-gray-500">No hay imagen cargada.</p>
                 @endif
-                
-                {{-- Cambiar Imagen --}}
-                <div>
-                    <label for="image" class="block text-gray-700 text-sm font-bold mb-2">Cambiar Imagen</label>
-                    <input type="file" name="image" id="image" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
+                <label for="image" class="block text-gray-700 text-sm font-bold mb-2">Cambiar Imagen (opcional)</label>
+                <input type="file" name="image" id="image" class="shadow appearance-none border @error('image') border-red-500 @enderror rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                @error('image')
+                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                @enderror
             </div>
-        </div>
-    </div>
 
-    {{-- Botón de Actualizar --}}
-    <div class="mt-8 flex justify-end">
-        <button type="submit" class="bg-blue-600 hover:bg-blue-800 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:shadow-outline transition-colors duration-300">
-            Actualizar Producto
-        </button>
+            <div class="flex items-center justify-end mt-6 gap-4">
+                <a href="{{ route('admin.productos.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Cancelar
+                </a>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Actualizar Producto
+                </button>
+            </div>
+        </form>
     </div>
-</form>
+</div>
 @endsection
