@@ -9,10 +9,7 @@
 
     <div class="flex justify-between items-center mb-8">
         <h1 class="text-3xl font-bold">{{ $pageTitle ?? 'Nuestros Productos' }}</h1>
-        
-        {{-- ============================================= --}}
-        {{-- Botón para Crear Producto (Solo para Admins)  --}}
-        {{-- ============================================= --}}
+
         @auth
             @if(Auth::user()->role == 'admin')
                 <a href="{{ route('admin.productos.create') }}" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-700">
@@ -28,7 +25,7 @@
             @foreach ($products as $product)
                 <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
                     <a href="{{ route('tienda.show', $product) }}">
-                        <img src="{{ asset('storage/' . $product->image) }}" alt="Imagen de {{ $product->name }}" class="w-full h-48 object-cover">
+                        <td><img src="{{ asset('storage/' . $product->image) }}" ...></td>
                     </a>
                     <div class="p-4">
                         <h3 class="text-lg font-semibold mb-2 truncate">{{ $product->name }}</h3>
@@ -48,9 +45,6 @@
                                 Ver detalles
                             </a>
 
-                            {{-- ============================================= --}}
-                            {{--  Acciones de Admin (Editar y Eliminar)      --}}
-                            {{-- ============================================= --}}
                             @auth
                                 @if(Auth::user()->role == 'admin')
                                     <div class="flex justify-around mt-2 pt-2 border-t">
