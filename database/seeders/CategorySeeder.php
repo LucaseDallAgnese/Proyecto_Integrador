@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Category;
 use Illuminate\Database\Seeder;
+use App\Models\Category;
 
 class CategorySeeder extends Seeder
 {
@@ -12,6 +12,13 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        Category::create(['name' => 'General', 'description' => 'Categoría por defecto']);
+        // Creación de categorías de ejemplo
+        Category::create(['name' => 'Procesadores']);
+        Category::create(['name' => 'Tarjetas Gráficas']);
+        Category::create(['name' => 'Memorias RAM']);
+        Category::create(['name' => 'Almacenamiento']);
+        Category::create(['name' => 'Placas Base']);
+        Category::create(['name' => 'Fuentes de Poder']);
+        Category::create(['name' => 'General']); // <-- AQUÍ ESTÁ
     }
 }

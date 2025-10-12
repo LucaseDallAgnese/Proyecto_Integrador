@@ -31,13 +31,13 @@ Route::post('olvide-mi-contrasena', [ForgotPasswordController::class, 'sendReset
 Route::get('restablecer-contrasena/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('restablecer-contrasena', [ResetPasswordController::class, 'reset'])->name('password.update');
 
-// Rutas del Carrito de Compras (¡CORREGIDAS Y UNIFICADAS!)
+// Rutas del Carrito de Compras
 Route::prefix('carrito')->name('carrito.')->group(function () {
     Route::get('/', [CartController::class, 'index'])->name('detalle'); // Apunta a index()
     Route::post('/agregar', [CartController::class, 'agregar'])->name('agregar');
     Route::post('/eliminar', [CartController::class, 'remove'])->name('eliminar'); // Apunta a remove()
     Route::post('/vaciar', [CartController::class, 'clear'])->name('vaciar'); // Apunta a clear()
-    // Puedes agregar la ruta para actualizar si la necesitas
+    
     // Route::post('/actualizar', [CartController::class, 'actualizar'])->name('actualizar');
 });
 
@@ -51,7 +51,8 @@ Route::middleware('auth')->group(function () {
 // Rutas del Panel de Administración (Protegidas)
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::resource('categorias', \App\Http\Controllers\Admin\CategoriaController::class);
 
-    // Usamos un controlador de recursos para los productos
+    // controlador de recursos para los productos
     Route::resource('productos', \App\Http\Controllers\Admin\ProductController::class);
 });

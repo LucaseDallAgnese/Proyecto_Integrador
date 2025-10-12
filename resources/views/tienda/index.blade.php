@@ -3,82 +3,96 @@
 @section('title', 'Tienda')
 
 @section('content')
-<div class="container mx-auto px-4">
-    
-    {{-- Hero Section --}}
-    <div class="bg-gray-800 text-white text-center py-20 rounded-lg mb-12" style="background-image: url('{{ asset('images/habitacion-gamer-en-navidad_3840x2160_xtrafondos.com.webp') }}'); background-size: cover; background-position: center;">
-        <h1 class="text-5xl font-bold mb-4 text-shadow-lg">Bienvenido a TeraStore</h1>
-        <p class="text-xl text-shadow-md">Tu tienda de confianza para componentes de PC</p>
-    </div>
+<div class="container mx-auto px-4 py-8">
 
-    <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold">{{ $pageTitle ?? 'Nuestros Productos' }}</h1>
+    {{-- Título y Filtros --}}
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4 md:mb-0">{{ $pageTitle ?? 'Nuestros Productos' }}</h1>
 
-        @auth
-            @if(Auth::user()->role == 'admin')
-                <a href="{{ route('admin.productos.create') }}" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-700">
-                    &#43; Crear Producto
+        {{-- Formulario de Filtros --}}
+        <form action="{{ route('tienda.index') }}" method="GET" class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+            <input
+                type="text"
+                name="search"
+                placeholder="Buscar producto..."
+                class="shadow-sm border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 w-full sm:w-auto"
+                value="{{ request('search') }}"
+            >
+            <select
+                name="category_id"
+                class="shadow-sm border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 w-full sm:w-auto"
+                onchange="this.form.submit()"
+            >
+                <option value="">Todas las categorías</option>
+                @foreach($categories as $category)
+                    <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                        {{ $category->name }}
+                    </option>
+                @endforeach
+            </select>
+            {{-- Botón para limpiar filtros, aparece si hay alguno activo --}}
+            @if(request('search') || request('category_id'))
+                <a href="{{ route('tienda.index') }}" class="text-center bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors">
+                    Limpiar
                 </a>
             @endif
-        @endauth
+        </form>
     </div>
 
+    {{-- Listado de Productos --}}
     @if($products->count() > 0)
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {{-- Bucle para cada producto --}}
             @foreach ($products as $product)
-                <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
-                    <a href="{{ route('tienda.show', $product) }}">  
-                        <img src="{{ asset('storage/' . $product->image) }}" alt="Imagen de {{ $product->name }}" class="w-full h-48 object-cover">
-                    </a>
-                    <div class="p-4">
-                        <h3 class="text-lg font-semibold mb-2 truncate">{{ $product->name }}</h3>
-                        
-                        {{-- ====================================================== --}}
-                        {{-- INICIO DEL CÓDIGO CORREGIDO PARA MOSTRAR EL PRECIO --}}
-                        {{-- ====================================================== --}}
+                <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 group flex flex-col">
+                    <a href="{{ route('tienda.show', $product) }}" class="relative block">
+                        {{-- Etiqueta de Descuento (solo si existe) --}}
                         @if($product->discount > 0)
-                            {{-- Si hay descuento, muestra el precio original tachado y el nuevo precio --}}
-                            <p class="text-gray-500 font-bold text-xl mb-1">
-                                <span class="line-through">${{ number_format($product->price, 2) }}</span>
-                            </p>
-                            <p class="text-red-600 font-bold text-xl mb-4">
-                                ${{ number_format($product->price * (1 - $product->discount / 100), 2) }}
-                                <span class="text-sm text-green-500">{{ $product->discount }}% OFF</span>
-                            </p>
-                        @else
-                            {{-- Si no hay descuento, muestra solo el precio normal --}}
-                            <p class="text-gray-800 font-bold text-xl mb-4">${{ number_format($product->price, 2) }}</p>
+                            <div class="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10">
+                                -{{ number_format($product->discount, 0) }}%
+                            </div>
                         @endif
-                        {{-- ====================================================== --}}
-                        {{-- FIN DEL CÓDIGO CORREGIDO --}}
-                        {{-- ====================================================== --}}
+                        <img src="{{ asset('storage/' . $product->image) }}" alt="Imagen de {{ $product->name }}" class="w-full h-56 object-cover group-hover:opacity-90 transition-opacity">
+                    </a>
 
-                        <div class="flex flex-col space-y-2">
-                             <form action="{{ route('carrito.agregar') }}" method="POST">
+                    <div class="p-4 flex flex-col flex-grow">
+                        {{-- Categoría del Producto --}}
+                        <p class="text-sm text-gray-500 mb-1">{{ $product->category->name ?? 'Sin categoría' }}</p>
+                        {{-- Nombre del Producto --}}
+                        <h3 class="text-lg font-bold text-gray-800 mb-3 truncate flex-grow" title="{{ $product->name }}">
+                            {{ $product->name }}
+                        </h3>
+
+                        {{-- Precios --}}
+                        <div class="mb-4">
+                            @if($product->discount > 0)
+                                {{-- Si hay descuento, muestra ambos precios --}}
+                                <div class="flex items-baseline gap-2">
+                                    <p class="text-2xl font-bold text-red-600">
+                                        ${{ number_format($product->price * (1 - $product->discount / 100), 2) }}
+                                    </p>
+                                    <p class="text-md text-gray-400 line-through">
+                                        ${{ number_format($product->price, 2) }}
+                                    </p>
+                                </div>
+                            @else
+                                {{-- Si no hay descuento, muestra solo el precio normal --}}
+                                <p class="text-2xl font-bold text-gray-900">
+                                    ${{ number_format($product->price, 2) }}
+                                </p>
+                            @endif
+                        </div>
+
+                        {{-- Botón para agregar al carrito --}}
+                        <div class="mt-auto">
+                            <form action="{{ route('carrito.agregar') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                                 <input type="hidden" name="quantity" value="1">
-                                <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                                <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-300">
                                     Agregar al carrito
                                 </button>
                             </form>
-                            
-                            <a href="{{ route('tienda.show', $product) }}" class="w-full bg-gray-200 text-gray-800 text-center py-2 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
-                                Ver detalles
-                            </a>
-
-                            @auth
-                                @if(Auth::user()->role == 'admin')
-                                    <div class="flex justify-around mt-2 pt-2 border-t">
-                                        <a href="{{ route('admin.productos.edit', $product->id) }}" class="text-yellow-500 hover:text-yellow-700 font-semibold">Editar</a>
-                                        <form action="{{ route('admin.productos.destroy', $product->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-500 hover:text-red-700 font-semibold">Eliminar</button>
-                                        </form>
-                                    </div>
-                                @endif
-                            @endauth
                         </div>
                     </div>
                 </div>
@@ -86,12 +100,17 @@
         </div>
 
         {{-- Paginación --}}
-        <div class="mt-10">
+        <div class="mt-12">
             {{ $products->appends(request()->query())->links() }}
         </div>
     @else
-        <div class="text-center py-16">
-            <h2 class="text-xl text-gray-600">No se encontraron productos que coincidan con tu búsqueda.</h2>
+        {{-- Mensaje si no se encuentran productos --}}
+        <div class="text-center py-16 bg-gray-50 rounded-lg">
+            <h2 class="text-2xl font-semibold text-gray-700">No se encontraron productos</h2>
+            <p class="text-gray-500 mt-2">Intenta modificar tu búsqueda o limpiar los filtros.</p>
+            <a href="{{ route('tienda.index') }}" class="mt-4 inline-block bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">
+                Ver todos los productos
+            </a>
         </div>
     @endif
 </div>
