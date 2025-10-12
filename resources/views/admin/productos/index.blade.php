@@ -1,76 +1,74 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
-@section('title', 'Tienda')
+@section('title', 'Gestión de Productos')
+@section('page-title', 'Productos')
 
 @section('content')
-<div class="container mx-auto px-4">
-    
-    <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold">{{ $pageTitle ?? 'Nuestros Productos' }}</h1>
+<div class="bg-white p-6 rounded-lg shadow-lg">
 
-        @auth
-            @if(Auth::user()->role == 'admin')
-                <a href="{{ route('admin.productos.create') }}" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-700">
-                    &#43; Crear Producto
-                </a>
-            @endif
-        @endauth
+    {{-- Encabezado y Botón de Crear --}}
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold text-gray-700">Listado de Productos</h2>
+        <a href="{{ route('admin.productos.create') }}" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-700">
+            &#43; Crear Nuevo Producto
+        </a>
     </div>
 
-
-    @if($products->count() > 0)
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            @foreach ($products as $product)
-                <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
-                    <a href="{{ route('tienda.show', $product) }}">
-                        
-                        <img src="{{ asset('storage/' . $product->image) }}" alt="Imagen de {{ $product->name }}" class="w-full h-48 object-cover">
-
-                    </a>
-                    <div class="p-4">
-                        <h3 class="text-lg font-semibold mb-2 truncate">{{ $product->name }}</h3>
-                        <p class="text-gray-800 font-bold text-xl mb-4">${{ number_format($product->price, 2) }}</p>
-                        
-                        <div class="flex flex-col space-y-2">
-                             <form action="{{ route('carrito.agregar') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                <input type="hidden" name="quantity" value="1">
-                                <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-                                    Agregar al carrito
-                                </button>
-                            </form>
-                            
-                            <a href="{{ route('tienda.show', $product) }}" class="w-full bg-gray-200 text-gray-800 text-center py-2 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
-                                Ver detalles
-                            </a>
-
-                            @auth
-                                @if(Auth::user()->role == 'admin')
-                                    <div class="flex justify-around mt-2 pt-2 border-t">
-                                        <a href="{{ route('admin.productos.edit', $product->id) }}" class="text-yellow-500 hover:text-yellow-700 font-semibold">Editar</a>
-                                        <form action="{{ route('admin.productos.destroy', $product->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-500 hover:text-red-700 font-semibold">Eliminar</button>
-                                        </form>
-                                    </div>
-                                @endif
-                            @endauth
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-
-        {{-- Paginación --}}
-        <div class="mt-10">
-            {{ $products->appends(request()->query())->links() }}
-        </div>
-    @else
-        <div class="text-center py-16">
-            <h2 class="text-xl text-gray-600">No se encontraron productos que coincidan con tu búsqueda.</h2>
+    {{-- Mensajes de éxito --}}
+    @if (session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <span class="block sm:inline">{{ session('success') }}</span>
         </div>
     @endif
+    
+    {{-- TODO: Agregar filtros de búsqueda aquí si lo deseas --}}
+
+    {{-- Tabla de Productos --}}
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white">
+            <thead class="bg-gray-200">
+                <tr>
+                    <th class="py-2 px-4 border-b text-left">Imagen</th>
+                    <th class="py-2 px-4 border-b text-left">Nombre</th>
+                    <th class="py-2 px-4 border-b text-left">Categoría</th>
+                    <th class="py-2 px-4 border-b text-right">Precio</th>
+                    <th class="py-2 px-4 border-b text-center">Stock</th>
+                    <th class="py-2 px-4 border-b text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($products as $product)
+                    <tr class="hover:bg-gray-100">
+                        <td class="py-2 px-4 border-b">
+                            <img src="{{ asset('storage/' . $product->image) }}" alt="Imagen de {{ $product->name }}" class="w-16 h-16 object-cover rounded">
+                        </td>
+                        <td class="py-2 px-4 border-b font-medium">{{ $product->name }}</td>
+                        <td class="py-2 px-4 border-b text-gray-600">{{ $product->category->name ?? 'Sin categoría' }}</td>
+                        <td class="py-2 px-4 border-b text-right">${{ number_format($product->price, 2) }}</td>
+                        <td class="py-2 px-4 border-b text-center">{{ $product->stock }}</td>
+                        <td class="py-2 px-4 border-b text-center">
+                            <div class="flex justify-center items-center space-x-4">
+                                <a href="{{ route('admin.productos.edit', $product) }}" class="text-yellow-500 hover:text-yellow-700 font-semibold">Editar</a>
+                                <form action="{{ route('admin.productos.destroy', $product) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este producto?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-500 hover:text-red-700 font-semibold">Eliminar</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="py-4 px-4 text-center text-gray-500">No hay productos para mostrar.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    {{-- Paginación --}}
+    <div class="mt-6">
+        {{ $products->links() }}
+    </div>
 </div>
 @endsection

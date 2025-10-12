@@ -79,17 +79,12 @@
             </div>
 
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2">Imagen Actual</label>
+                <label class="block ...">Imagen Actual</label>
                 @if($product->image)
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="h-32 w-32 object-cover rounded mb-4">
-                @else
-                    <p class="text-sm text-gray-500">No hay imagen cargada.</p>
+                <img src="{{ asset('storage/' ' . $product->image) }}" ...>
                 @endif
-                <label for="image" class="block text-gray-700 text-sm font-bold mb-2">Cambiar Imagen (opcional)</label>
-                <input type="file" name="image" id="image" class="shadow appearance-none border @error('image') border-red-500 @enderror rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                @error('image')
-                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
-                @enderror
+                <label for="image" class="block ...">Cambiar Imagen (opcional)</label>
+                <input type="file" name="image" id="image" ...>
             </div>
 
             <div class="flex items-center justify-end mt-6 gap-4">
