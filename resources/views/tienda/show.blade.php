@@ -40,7 +40,7 @@
                     </p>
                     @else
                     <p class="text-3xl font-bold text-gray-900 mb-4">${{ number_format($product->price, 2) }}</p>
-                    @endifspan> unidades</p>
+                    @endif unidades</p>
                     
                     <form action="{{ route('carrito.agregar') }}" method="POST" class="mt-4">
                         @csrf
