@@ -8,7 +8,7 @@
     {{-- Título y Filtros --}}
 <div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
 
-    {{-- 1. Mantenemos un formulario SÓLO para la búsqueda por nombre --}}
+    {{--formulario para la búsqueda por nombre --}}
     <form action="{{ route('tienda.index') }}" method="GET" class="flex items-center gap-4">
         <input
             type="text"
