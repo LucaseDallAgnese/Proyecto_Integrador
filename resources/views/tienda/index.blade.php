@@ -6,36 +6,42 @@
 <div class="container mx-auto px-4 py-8">
 
     {{-- Título y Filtros --}}
-    <div class="flex flex-col md:flex-row justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-4 md:mb-0">{{ $pageTitle ?? 'Nuestros Productos' }}</h1>
+<div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
 
-        {{-- Formulario de Filtros --}}
-        <form action="{{ route('tienda.index') }}" method="GET" class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-            <input
-                type="text"
-                name="search"
-                placeholder="Buscar producto..."
-                class="shadow-sm border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 w-full sm:w-auto"
-                value="{{ request('search') }}"
-            >
-            <select ...>
-                <option value="">Categorias</option>
-                    {{-- Este bucle recorre cualquier categoría que venga del controlador --}}
-                @foreach($categories as $category)
-                <option value="{{ $category->id }}" ...>
+    {{-- 1. Mantenemos un formulario SÓLO para la búsqueda por nombre --}}
+    <form action="{{ route('tienda.index') }}" method="GET" class="flex items-center gap-4">
+        <input
+            type="text"
+            name="search"
+            placeholder="Buscar producto..."
+            class="shadow-sm border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 w-full sm:w-auto"
+            value="{{ request('search') }}"
+        >
+        {{-- Puedes agregar un botón si quieres, o dejar que funcione con "Enter" --}}
+        {{-- <button type="submit" class="bg-blue-600 text-white ...">Buscar</button> --}}
+    </form>
+
+    {{-- 2. El select de categorías ahora funciona con JavaScript --}}
+    <select
+        id="category_filter" {{-- Le damos un ID --}}
+        class="shadow-sm border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 w-full sm:w-auto"
+    >
+        <option value="">Todas las categorías</option>
+        @foreach($categories as $category)
+            {{-- El 'value' ahora es la URL completa a la nueva página de categoría --}}
+            <option value="{{ route('categoria.show', $category->id) }}">
                 {{ $category->name }}
-                </option>
-                @endforeach
-            </select>
-            </select>
-            {{-- Botón para limpiar filtros, aparece si hay alguno activo --}}
-            @if(request('search') || request('category_id'))
-                <a href="{{ route('tienda.index') }}" class="text-center bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors">
-                    Limpiar
-                </a>
-            @endif
-        </form>
-    </div>
+            </option>
+        @endforeach
+    </select>
+
+    {{-- 3. El botón "Limpiar" ahora solo se muestra si hay una búsqueda de texto --}}
+    @if(request('search'))
+        <a href="{{ route('tienda.index') }}" class="text-center bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors">
+            Limpiar búsqueda
+        </a>
+    @endif
+</div>
 
     {{-- Listado de Productos --}}
     @if($products->count() > 0)
@@ -112,4 +118,26 @@
         </div>
     @endif
 </div>
+
+@push('scripts')
+<script>
+    // Espera a que la página cargue
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // Busca el <select> por su ID
+        const categoryFilter = document.getElementById('category_filter');
+        categoryFilter.addEventListener('change', function() {
+            
+            if (this.value) { 
+                // Si el valor no está vacío 
+                // Redirige el navegador 
+                window.location.href = this.value;
+            } else {
+                window.location.href = "{{ route('tienda.index') }}";
+            }
+        });
+    });
+</script>
+@endpush
+
 @endsection

@@ -17,6 +17,8 @@ Route::get('/', [ProductController::class, 'index'])->name('home');
 Route::get('/tienda/{product}', [ProductController::class, 'show'])->name('tienda.show');
 //Ruta para busqueda y filtros
 Route::get('/tienda', [ProductController::class, 'index'])->name('tienda.index');
+// Ruta para ver productos por categoría
+Route::get('/categoria/{category}', [ProductController::class, 'showByCategory'])->name('categoria.show');
 
 // Rutas de Autenticación
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');

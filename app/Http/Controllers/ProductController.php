@@ -52,6 +52,27 @@ class ProductController extends Controller
             'pageTitle' => $pageTitle
         ]);
     }
+    /**
+     * Muestra los productos de una categoría específica.
+     */
+    public function showByCategory(Category $category)
+    {
+        // Obtenemos todos los productos que pertenecen a esta categoría
+        $products = Product::where('category_id', $category->id)
+                           ->with('category') 
+                           ->paginate(12); 
+
+        $categories = Category::all();
+
+        // Pasamos los productos y la categoría actual a una nueva vista
+        return view('categoria.show', [
+            'products' => $products,
+            'currentCategory' => $category, 
+            'categories' => $categories,   
+            'pageTitle' => 'Productos de ' . $category->name 
+        ]);
+    }
+
 
     /**
      * Muestra la página de detalle de un producto específico.
