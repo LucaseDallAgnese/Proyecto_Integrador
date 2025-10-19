@@ -18,17 +18,15 @@
                 class="shadow-sm border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 w-full sm:w-auto"
                 value="{{ request('search') }}"
             >
-            <select
-                name="category_id"
-                class="shadow-sm border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 w-full sm:w-auto"
-                onchange="this.form.submit()"
-            >
+            <select ...>
                 <option value="">Todas las categorías</option>
+                    {{-- Este bucle recorre CUALQUIER categoría que venga del controlador --}}
                 @foreach($categories as $category)
-                    <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                        {{ $category->name }}
-                    </option>
+                <option value="{{ $category->id }}" ...>
+                {{ $category->name }}
+                </option>
                 @endforeach
+            </select>
             </select>
             {{-- Botón para limpiar filtros, aparece si hay alguno activo --}}
             @if(request('search') || request('category_id'))
