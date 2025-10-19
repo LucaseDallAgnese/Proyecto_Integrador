@@ -12,13 +12,12 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        // Creación de categorías de ejemplo
+        // Creación de categorías
         Category::create(['name' => 'Procesadores']);
         Category::create(['name' => 'Tarjetas Gráficas']);
         Category::create(['name' => 'Memorias RAM']);
         Category::create(['name' => 'Almacenamiento']);
-        Category::create(['name' => 'Placas Base']);
+        Category::create(['name' => 'Motherboards']);
         Category::create(['name' => 'Fuentes de Poder']);
-        Category::create(['name' => 'General']); // <-- AQUÍ ESTÁ
     }
 }

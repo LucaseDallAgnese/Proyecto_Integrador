@@ -19,8 +19,8 @@
                 value="{{ request('search') }}"
             >
             <select ...>
-                <option value="">Todas las categorías</option>
-                    {{-- Este bucle recorre CUALQUIER categoría que venga del controlador --}}
+                <option value="">Categorias</option>
+                    {{-- Este bucle recorre cualquier categoría que venga del controlador --}}
                 @foreach($categories as $category)
                 <option value="{{ $category->id }}" ...>
                 {{ $category->name }}

@@ -39,7 +39,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
-                        {{-- Contador de items en el carrito (opcional pero recomendado) --}}
+                        {{-- Contador de items en el carrito --}}
                         @if(session('cart') && count(session('cart')) > 0)
                             <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                                 {{ count(session('cart')) }}
@@ -74,23 +74,6 @@
                 </div>
             </div>
         </header>
-
-        {{-- Barra de Navegación de Categorías --}}
-        <nav class="bg-blue-700 shadow-md">
-            <div class="container mx-auto px-4">
-                <div class="flex justify-center space-x-4">
-                    <a href="{{ route('tienda.index') }}" class="py-3 px-4 text-white hover:bg-blue-600 transition-colors {{ !request('category_id') ? 'bg-blue-900' : '' }}">
-                        Todos
-                    </a>
-                    @foreach (app(\App\Models\Category::class)->all() as $category)
-                        <a href="{{ route('tienda.index', ['category_id' => $category->id]) }}" 
-                           class="py-3 px-4 text-white hover:bg-blue-600 transition-colors {{ request('category_id') == $category->id ? 'bg-blue-900' : '' }}">
-                            {{ $category->name }}
-                        </a>
-                    @endforeach
-                </div>
-            </div>
-        </nav>
     </div>
 
     {{-- Contenido Principal --}}
