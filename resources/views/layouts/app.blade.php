@@ -6,6 +6,7 @@
     <title>@yield('title', 'TeraStore')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
+@stack('scripts')
 <body class="bg-gray-100 font-sans antialiased">
     
     <div class="bg-blue-800 text-white shadow-md">

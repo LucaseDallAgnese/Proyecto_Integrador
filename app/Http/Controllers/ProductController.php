@@ -69,7 +69,7 @@ class ProductController extends Controller
             'products' => $products,
             'currentCategory' => $category, 
             'categories' => $categories,   
-            'pageTitle' => 'Productos de ' . $category->name 
+            'pageTitle' => $category->name
         ]);
     }
 
