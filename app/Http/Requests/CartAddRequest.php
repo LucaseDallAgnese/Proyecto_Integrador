@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Request;
+namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 class CartAddRequest extends FormRequest
 {
-    public function authorize(): boolval
+    public function authorize(): bool
     {
         return true;
     }
