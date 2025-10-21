@@ -5,16 +5,22 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\CartAddRequest;
 use App\Models\Product;
-use Darryldecode\Cart\Facades\CartFacade as Cart;
+// Ya no necesitamos 'use Darryldecode\Cart\Facades\CartFacade as Cart;'
 
 class CartController extends Controller
 {
+    /**
+     * Muestra la vista del carrito.
+     * La vista 'carrito.detalle' ya lee los datos de 'session('cart')'
+     */
     public function index()
     {
-        $cartItems = Cart::getContent();
-        return view('carrito.detalle', compact('cartItems'));
+        return view('carrito.detalle');
     }
 
+    /**
+     * Agrega un producto al carrito en la sesión.
+     */
     public function agregar(CartAddRequest $request)
     {
         $validated = $request->validated();
@@ -34,7 +40,7 @@ class CartController extends Controller
                 "quantity" => $quantity,
                 "price" => $product->discount > 0 ? $product->price * (1 - $product->discount / 100) : $product->price,
                 "image" => $product->image,
-                "discount" => $product->discount // Guardamos el descuento por si acaso
+                "discount" => $product->discount
             ];
         }
 
@@ -50,22 +56,58 @@ class CartController extends Controller
         return response()->json([
             'success' => true,
             'message' => '¡Producto agregado al carrito!',
-            'cartItemCount' => $totalItems // Envía el nuevo total de items
+            'cartItemCount' => $totalItems
         ]);
     }
 
+    /**
+     * NUEVO: Actualiza la cantidad de un producto en el carrito.
+     */
+    public function actualizar(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|numeric|exists:products,id',
+            'quantity' => 'required|numeric|min:1',
+        ]);
+        
+        $cart = session()->get('cart');
+
+        if(isset($cart[$request->product_id])) {
+            $cart[$request->product_id]['quantity'] = (int)$request->quantity;
+            session()->put('cart', $cart);
+            
+            return back()->with('success', 'Cantidad actualizada correctamente.');
+        }
+
+        return back()->with('error', 'No se pudo actualizar el producto.');
+    }
+
+    /**
+     * CORREGIDO: Elimina un producto del carrito en la sesión.
+     */
     public function remove(Request $request)
     {
-        Cart::remove($request->id);
-        return redirect()->route('cart.index')->with('success', 'Producto eliminado del carrito.');
+        $request->validate([ 'product_id' => 'required' ]);
+        
+        $cart = session()->get('cart');
+
+        if(isset($cart[$request->product_id])) {
+            unset($cart[$request->product_id]);
+            session()->put('cart', $cart);
+            
+            return back()->with('success', 'Producto eliminado del carrito.');
+        }
+
+        return back()->with('error', 'No se pudo eliminar el producto.');
     }
 
+    /**
+     * CORREGIDO: Vacía todo el carrito de la sesión.
+     */
     public function clear()
     {
-        Cart::clear();
-        return redirect()->route('cart.index')->with('success', 'El carrito ha sido vaciado.');
+        session()->forget('cart');
+        
+        return redirect()->route('carrito.detalle')->with('success', 'El carrito ha sido vaciado.');
     }
-
-
-
 }

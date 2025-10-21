@@ -11,24 +11,24 @@
     
     <div id="app" class="min-h-screen flex flex-col"> {{-- Contenedor principal --}}
 
-        {{-- Fondo azul más oscuro, sombra más pronunciada --}}
-        <nav class="bg-gradient-to-r from-blue-800 to-blue-900 text-white shadow-lg sticky top-0 z-50"> 
-            <div class="container mx-auto px-4 py-3"> {{-- Ajustado padding vertical py-3 --}}
+        {{-- estilos del header --}}
+        <nav class="bg-gray-900 text-white shadow-lg sticky top-0 z-50"> 
+            <div class="container mx-auto ">
                 <div class="flex justify-between items-center">
                     {{-- Logo --}}
                     <a href="{{ route('home') }}" class="flex items-center flex-shrink-0 mr-6">
-                        <img src="{{ asset('images/logo.png') }}" alt="Logo TeraStore" class="h-12 w-auto"> 
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo TeraStore" class="h-20 w-auto"> 
                     </a>
 
                     {{-- Barra de búsqueda central --}}
-                    <div class="flex-grow max-w-xl hidden sm:block"> {{-- Oculta en móvil (sm:block) --}}
+                    <div class="flex-grow hidden sm:block"> {{-- Oculta en móvil (sm:block) --}}
                         <form action="{{ route('tienda.index') }}" method="GET" class="relative">
                             <input 
                                 type="text" 
                                 name="search" 
                                 placeholder="Buscar productos..." 
                                 {{-- Fondo ligeramente más claro, focus mejorado --}}
-                                class="w-full bg-blue-700 text-white placeholder-blue-300 px-5 py-2.5 pr-12 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-blue-600 transition-colors duration-200" 
+                                class="w-full border-blue bg-white-900 text-white placeholder-blue-300 px-5 py-2.5 pr-12 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-blue-600 transition-colors duration-200" 
                                 value="{{ request('search') }}"
                             >
                             <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-blue-300 hover:text-white transition-colors"> {{-- Ajustado right-4 --}}
@@ -40,7 +40,7 @@
                     </div>
 
                     {{-- Links de usuario y Carrito --}}
-                    <div class="flex items-center space-x-5"> {{-- Reducido space-x-5 --}}
+                    <div class="flex items-center space-x-5 ml-6">
                         
                         {{-- Carrito --}}
                         <a href="{{ route('carrito.detalle') }}" class="relative text-gray-300 hover:text-white transition-colors group">

@@ -40,7 +40,7 @@ Route::prefix('carrito')->name('carrito.')->group(function () {
     Route::post('/eliminar', [CartController::class, 'remove'])->name('eliminar'); // Apunta a remove()
     Route::post('/vaciar', [CartController::class, 'clear'])->name('vaciar'); // Apunta a clear()
     
-    // Route::post('/actualizar', [CartController::class, 'actualizar'])->name('actualizar');
+    Route::post('/actualizar', [CartController::class, 'actualizar'])->name('actualizar');
 });
 
 //Rutas de compra (solo los usuarios logueados pueden comprar)
