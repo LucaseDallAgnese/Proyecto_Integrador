@@ -9,10 +9,6 @@ use App\Models\Product;
 
 class CartController extends Controller
 {
-    /**
-     * Muestra la vista del carrito.
-     * La vista 'carrito.detalle' ya lee los datos de 'session('cart')'
-     */
     public function index()
     {
         return view('carrito.detalle');
@@ -55,7 +51,7 @@ class CartController extends Controller
         // Devuelve una respuesta JSON
         return response()->json([
             'success' => true,
-            'message' => '¡Producto agregado al carrito!',
+            'message' => ('¡Producto agregado al carrito!'),
             'cartItemCount' => $totalItems
         ]);
     }
