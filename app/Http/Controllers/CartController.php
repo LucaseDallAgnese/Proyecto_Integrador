@@ -51,7 +51,7 @@ class CartController extends Controller
         // Devuelve una respuesta JSON
         return response()->json([
             'success' => true,
-            'message' => ('¡Producto agregado al carrito!'),
+            'message' => trim('¡Producto agregado al carrito!'),
             'cartItemCount' => $totalItems
         ]);
     }
@@ -71,7 +71,6 @@ class CartController extends Controller
         if(isset($cart[$request->product_id])) {
             $cart[$request->product_id]['quantity'] = (int)$request->quantity;
             session()->put('cart', $cart);
-            
             return back()->with('success', 'Cantidad actualizada correctamente.');
         }
 
