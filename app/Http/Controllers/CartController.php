@@ -49,11 +49,7 @@ class CartController extends Controller
         }
 
         // Devuelve una respuesta JSON
-        return response()->json([
-            'success' => true,
-            'message' => trim('¡Producto agregado al carrito!'),
-            'cartItemCount' => $totalItems
-        ]);
+        return redirect()->route('carrito.detalle')->with('success', '¡Producto agregado al carrito!');
     }
 
     /**
@@ -78,7 +74,7 @@ class CartController extends Controller
     }
 
     /**
-     * CORREGIDO: Elimina un producto del carrito en la sesión.
+     *  Elimina un producto del carrito en la sesión.
      */
     public function remove(Request $request)
     {
