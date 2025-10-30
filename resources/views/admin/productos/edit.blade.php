@@ -81,7 +81,7 @@
             <div class="mb-4">
                 <label class="block ...">Imagen Actual</label>
                 @if($product->image)
-                <img src="{{ asset('storage/' ' . $product->image) }}" ...>
+                <img src="{{ asset('storage/' . $product->image) }}" ...>
                 @endif
                 <label for="image" class="block ...">Cambiar Imagen (opcional)</label>
                 <input type="file" name="image" id="image" ...>

@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Auth\Notifications\ResetPassword as ResetPasswordNotification;
+use App\Notifications\EnlaceRecuperacionPassword;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -62,4 +64,17 @@ class User extends Authenticatable
     {
         return $this->permissions()->where('name', $permissionName)->exists();
     }
+
+    /**
+    * Enviar la notificación de restablecimiento de contraseña.
+    *
+    * @param  string  $token
+    * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        // Ahora usamos nuestra propia notificación,
+        // que ya sabe que debe ir a la cola (Queue).
+        $this->notify(new EnlaceRecuperacionPassword($token));
+    } 
 }
