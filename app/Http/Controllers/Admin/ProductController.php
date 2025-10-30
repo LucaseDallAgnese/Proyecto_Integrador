@@ -31,7 +31,7 @@ class ProductController extends Controller
         }
 
         // Pagina los resultados y los ordena por el más reciente
-        $products = $query->latest()->paginate(10); 
+        $products = $query->latest()->paginate(20); 
         
         // Obtiene todas las categorías para el dropdown del filtro
         $categories = Category::all();

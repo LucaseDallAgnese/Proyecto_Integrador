@@ -16,10 +16,18 @@ class LoginController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
+        $credentials = $request->only('email', 'password');
+
         if (Auth::attempt($credentials)) {
+
+            $guestCart = $request->session()->get('cart', []);
+
             $request->session()->regenerate();
 
-            // Redireccionar según el rol del usuario
+            if (!empty($guestCart)) {
+                $request->session()->put('cart', $guestCart);
+            }
+
             if (Auth::user()->rol == 'admin') {
                 return redirect()->intended('/admin/dashboard');
             }

@@ -15,7 +15,14 @@
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-2 rounded-md hover:bg-gray-700">Dashboard</a>
                 <a href="{{ route('admin.productos.index') }}" class="flex items-center px-4 py-2 rounded-md hover:bg-gray-700">Productos</a>
                 <a href="{{-- route('admin.categorias.index') --}}" class="flex items-center px-4 py-2 rounded-md hover:bg-gray-700">Categorías</a>
-    </nav>
+                
+                <a href="{{ route('tienda.index') }}" 
+                class="flex items-center px-4 py-2 rounded-md hover:bg-gray-700" 
+                target="_blank">
+                Ver Tienda
+                </a>
+
+                </nav>
                 </nav>
         </aside>
 
