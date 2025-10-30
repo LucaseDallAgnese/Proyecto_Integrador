@@ -12,13 +12,15 @@ use Illuminate\Support\Facades\DB;
 class CheckoutController extends Controller
 {
     public function index()
-    {
-        $cartItems = Cart::getContent();
-        if ($cartItems->isEmpty()) {
-            return redirect('/')->with('error', 'Tu carrito está vacío.');
-        }
-        return view('checkout.index', compact('cartItems'));
+{
+    Cart::session(auth()->id()); 
+    
+    $cartItems = Cart::getContent();
+    if ($cartItems->isEmpty()) {
+        return redirect('/')->with('error', 'Tu carrito está vacío.');
     }
+    return view('checkout.index', compact('cartItems'));
+}
 
     public function process(Request $request)
     {
