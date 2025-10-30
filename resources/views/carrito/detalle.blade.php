@@ -5,13 +5,17 @@
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold text-center mb-8">Carrito de Compras</h1>
-
+    @if(session('success'))
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+        <span class="block sm:inline">{{ session('success') }}</span>
+    </div>
+@endif
     @php $total = 0; @endphp
 
     @if(session('cart') && count(session('cart')) > 0)
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            {{-- Columna Izquierda: Lista de Productos --}}
+            {{-- Lista de Productos --}}
             <div class="lg:col-span-2">
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <div class="flex justify-between items-center mb-4">
@@ -63,7 +67,7 @@
                 </div>
             </div>
 
-            {{-- Columna Derecha: Resumen de la Compra --}}
+            {{-- Resumen de la Compra --}}
             <div class="lg:col-span-1">
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-xl font-semibold mb-4">Resumen de la compra</h2>
