@@ -30,16 +30,19 @@ class RegisterController extends Controller
 
         $guestCart = $request->session()->get('cart', []);
 
-        $user = User::create($request->only('name', 'email', 'password'));
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->password,
+        ]);
 
         Auth::login($user);
+
         $request->session()->regenerate();
         if (!empty($guestCart)) {
             $request->session()->put('cart', $guestCart);
         }
 
-        return redirect()->intended(route('tienda.index'));
-        Auth::login($user);
-        return redirect()->route('home')->with('success', '¡Bienvenido! Tu cuenta ha sido creada exitosamente.');
+        return redirect()->intended(route('home'));
     }
 }
