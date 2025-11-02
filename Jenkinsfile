@@ -50,9 +50,9 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && 
                         
-                        # ✨ REINICIO CON EL NOMBRE ENCONTRADO EN EL SERVIDOR ✨
-                        sudo systemctl restart php8.2-fpm.service && 
-                        sudo systemctl restart nginx.service &&
+                        # REINICIO MANUAL NECESARIO: Estas líneas solo sirven si el servicio existe.
+                        sudo systemctl restart php8.2-fpm.service || true && 
+                        sudo systemctl restart nginx.service || true &&
                         
                         # COMANDOS CORE DE LARAVEL
                         composer install --no-dev --optimize-autoloader && 
@@ -83,11 +83,10 @@ pipeline {
 }
 ```
 
-### 2. Tarea Final (Manual y Automática)
+## 🚀 Plan de Cierre (¡Ahora!)
 
 1.  **Sube este `Jenkinsfile` a GitHub.**
-2.  **Reinicia los servicios en tu EC2 (Manual) una vez más:**
+2.  **¡Reinicia tu EC2!** Es la forma más rápida de cargar el *driver* de MySQL.
     ```bash
-    sudo systemctl restart php8.2-fpm.service
-    sudo systemctl restart nginx.service
+    sudo reboot
     
