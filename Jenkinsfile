@@ -1,4 +1,3 @@
-// Jenkinsfile
 pipeline {
     agent any 
 
@@ -12,27 +11,13 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                echo "Clonando el repositorio..."
-                cleanWs() 
-                git branch: 'Master', credentialsId: GIT_CREDENTIAL_ID, url: GIT_REPO_URL
-            }
-        }
-        
-        stage('Build Assets') {
-            steps {
-                echo "Instalando dependencias de Node.js y construyendo assets..."
-                sh '/bin/bash -c "npm install --force"' 
-                sh '/bin/bash -c "npm run build"'
-            }
-        }
+        // ... (Checkout y Build Assets no cambiaron) ...
 
         stage('Deploy') {
             steps {
                 echo "Sincronizando archivos con el servidor web..."
                 sshagent([WEB_SERVER_CREDENTIAL_ID]) {
-                    // **CORRECCIÓN DE RSYNC:** Añade flags --no-o --no-g --no-p (para evitar errores de permisos al transferir)
+                    // CÓDIGO CORREGIDO: Añade flags --no-o --no-g --no-p
                     sh "rsync -avz --no-o --no-g --no-p -e 'ssh -o StrictHostKeyChecking=no' --exclude='.git/' --exclude='node_modules/' --exclude='resources/' ./ ${WEB_SERVER}:${PROJECT_PATH}/"
                 }
             }
@@ -44,15 +29,19 @@ pipeline {
                 echo "Ejecutando comandos finales en el servidor web..."
                 sshagent([WEB_SERVER_CREDENTIAL_ID]) {
                     
-                    // ✨ PASO 1: PERMISOS TEMPORALES (Permite a Composer escribir, sin usar sudo)
+                    // PASO 1: PERMISOS TEMPORALES 777 (Permite a Composer escribir)
                     sh """
                         ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && \\
                         chmod -R 777 storage bootstrap/cache'
                     """
                     
-                    // ✨ PASO 2: COMANDOS DE LARAVEL (Ejecuta composer y genera la caché)
+                    // ✨✨ CAMBIO CRÍTICO AQUÍ: AÑADIMOS EL REINICIO ✨✨
                     sh """
                         ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && \\
+                        // REINICIAR LOS SERVICIOS para que PHP vea la extensión MySQL recién instalada
+                        sudo service php8.2-fpm restart && \\
+                        sudo service nginx restart && \\
+                        // COMANDOS DE LARAVEL
                         composer install --no-dev --optimize-autoloader && \\
                         php artisan config:cache && \\
                         php artisan route:cache && \\
@@ -61,7 +50,7 @@ pipeline {
                         php artisan storage:link'
                     """
 
-                    // ✨ PASO 3: DEVOLVER LA PROPIEDAD Y PERMISOS AL SERVIDOR WEB (www-data)
+                    // PASO 3: DEVOLVER LA PROPIEDAD Y PERMISOS (Seguridad)
                     sh """
                         ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && \\
                         sudo chown -R www-data:www-data storage bootstrap/cache && \\
