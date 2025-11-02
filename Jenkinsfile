@@ -11,13 +11,27 @@ pipeline {
     }
 
     stages {
-        // ... (Checkout y Build Assets no cambiaron) ...
+        stage('Checkout') {
+            steps {
+                echo "Clonando el repositorio..."
+                cleanWs() 
+                git branch: 'Master', credentialsId: GIT_CREDENTIAL_ID, url: GIT_REPO_URL
+            }
+        }
+        
+        stage('Build Assets') {
+            steps {
+                echo "Instalando dependencias de Node.js y construyendo assets..."
+                sh '/bin/bash -c "npm install --force"' 
+                sh '/bin/bash -c "npm run build"'
+            }
+        }
 
         stage('Deploy') {
             steps {
                 echo "Sincronizando archivos con el servidor web..."
                 sshagent([WEB_SERVER_CREDENTIAL_ID]) {
-                    // CÓDIGO CORREGIDO: Añade flags --no-o --no-g --no-p
+                    // Sincroniza todo con rsync y deshabilita la transferencia de permisos y grupos
                     sh "rsync -avz --no-o --no-g --no-p -e 'ssh -o StrictHostKeyChecking=no' --exclude='.git/' --exclude='node_modules/' --exclude='resources/' ./ ${WEB_SERVER}:${PROJECT_PATH}/"
                 }
             }
@@ -29,19 +43,21 @@ pipeline {
                 echo "Ejecutando comandos finales en el servidor web..."
                 sshagent([WEB_SERVER_CREDENTIAL_ID]) {
                     
-                    // PASO 1: PERMISOS TEMPORALES 777 (Permite a Composer escribir)
+                    // PASO 1: PERMISOS TEMPORALES 777 (Permite a Composer y Artisan escribir)
                     sh """
                         ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && \\
                         chmod -R 777 storage bootstrap/cache'
                     """
                     
-                    // ✨✨ CAMBIO CRÍTICO AQUÍ: AÑADIMOS EL REINICIO ✨✨
+                    // PASO 2: COMANDOS DE LARAVEL (REINICIO y Ejecución)
                     sh """
                         ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && \\
-                        // REINICIAR LOS SERVICIOS para que PHP vea la extensión MySQL recién instalada
+                        
+                        # REINICIAR SERVICIOS (Asegura que la extensión MySQL se cargue)
                         sudo service php8.2-fpm restart && \\
                         sudo service nginx restart && \\
-                        // COMANDOS DE LARAVEL
+                        
+                        # COMANDOS DE LARAVEL
                         composer install --no-dev --optimize-autoloader && \\
                         php artisan config:cache && \\
                         php artisan route:cache && \\
