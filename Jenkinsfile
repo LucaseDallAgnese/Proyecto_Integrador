@@ -50,7 +50,7 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && \\
                         composer install --no-dev --optimize-autoloader && \\
-                        npm install && \\
+                        npm install --production=false && \\
                         npm run build && \\
                         sudo chown -R www-data:www-data storage bootstrap/cache && \\
                         sudo chmod -R 775 storage bootstrap/cache && \\
