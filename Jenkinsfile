@@ -44,26 +44,23 @@ pipeline {
                 sshagent([WEB_SERVER_CREDENTIAL_ID]) {
                     
                     // PASO 1: PERMISOS TEMPORALES 777 (Permite a Composer escribir y evita el error inicial)
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && \\
-                        chmod -R 777 storage bootstrap/cache'
-                    """
+                    sh "ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && chmod -R 777 storage bootstrap/cache'"
                     
                     // PASO 2: LARAVEL CORE (Composer, Cache, Migraciones)
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && \\
-                        composer install --no-dev --optimize-autoloader && \\
-                        php artisan config:cache && \\
-                        php artisan route:cache && \\
-                        php artisan view:cache && \\
-                        php artisan migrate --force && \\
+                        ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && 
+                        composer install --no-dev --optimize-autoloader && 
+                        php artisan config:cache && 
+                        php artisan route:cache && 
+                        php artisan view:cache && 
+                        php artisan migrate --force && 
                         php artisan storage:link'
                     """
 
                     // PASO 3: DEVOLVER LA PROPIEDAD Y PERMISOS (Seguridad)
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && \\
-                        sudo chown -R www-data:www-data storage bootstrap/cache && \\
+                        ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && 
+                        sudo chown -R www-data:www-data storage bootstrap/cache && 
                         sudo chmod -R 775 storage bootstrap/cache'
                     """
                 }
@@ -78,16 +75,3 @@ pipeline {
         }
     }
 }
-```
-
-### 3. ¡Tarea Manual Final!
-
-El *pipeline* ya no intentará reiniciar los servicios, **pero la migración seguirá fallando** hasta que el *driver* de MySQL se cargue.
-
-**DEBES HACER ESTO MANUALMENTE EN TU EC2:**
-
-```bash
-# EJECUTAR ESTO EN TU EC2
-sudo systemctl restart nginx.service
-# Y
-sudo systemctl restart php8.2-fpm.service 
