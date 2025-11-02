@@ -4,16 +4,10 @@ pipeline {
 
     // Variables de entorno
     environment {
-        // --- Variables de tu SERVIDOR WEB (EC2, Droplet, etc.) ---
         WEB_SERVER = 'ubuntu@3.151.11.146'
-        // El ID de la credencial SSH para el servidor web (ej: ubuntu)
         WEB_SERVER_CREDENTIAL_ID = 'webserver-ssh' 
-        // La ruta de despliegue en el servidor web
         PROJECT_PATH = '/var/www/html/terastore'
-        
-        // --- Variables del Repositorio de Código ---
         GIT_REPO_URL = 'https://github.com/LucaseDallAgnese/Proyecto_Integrador.git'
-        // El ID de la credencial de GitHub
         GIT_CREDENTIAL_ID = 'github-token' 
     }
 
@@ -26,26 +20,19 @@ pipeline {
             }
         }
         
-        // Etapa 2: Construir los assets de frontend en Jenkins (Donde es Linux)
         stage('Build Assets') {
             steps {
                 echo "Instalando dependencias de Node.js y construyendo assets..."
-                
-                // 1. Instalación forzada: USAMOS npm install --force (Corrige la sintaxis y el EBADPLATFORM)
-                // Se mantiene el /bin/bash -c para asegurar que encuentra npm en el contenedor Docker.
                 sh '/bin/bash -c "npm install --force"' 
-                
-                // 2. Ejecutar la construcción de Vite
                 sh '/bin/bash -c "npm run build"'
             }
         }
 
-        // Etapa 3: Sincronizar (Deploy)
         stage('Deploy') {
             steps {
                 echo "Sincronizando archivos con el servidor web..."
                 sshagent([WEB_SERVER_CREDENTIAL_ID]) {
-                    // Sincroniza todo, excluyendo archivos de desarrollo/configuración innecesarios.
+                    // Sincroniza todo con rsync
                     sh "rsync -avz -e 'ssh -o StrictHostKeyChecking=no' --exclude='.git/' --exclude='node_modules/' --exclude='resources/' ./ ${WEB_SERVER}:${PROJECT_PATH}/"
                 }
             }
@@ -56,11 +43,18 @@ pipeline {
             steps {
                 echo "Ejecutando comandos finales en el servidor web..."
                 sshagent([WEB_SERVER_CREDENTIAL_ID]) {
+                    
+                    // ✨ PASO 1: CORRECCIÓN DE PERMISOS (Se ejecuta primero para que composer no falle)
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && \\
+                        sudo chown -R www-data:www-data storage bootstrap/cache && \\
+                        sudo chmod -R 775 storage bootstrap/cache'
+                    """
+                    
+                    // ✨ PASO 2: COMANDOS DE LARAVEL (Ejecuta composer, cache, y migraciones)
                     sh """
                         ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && \\
                         composer install --no-dev --optimize-autoloader && \\
-                        sudo chown -R www-data:www-data storage bootstrap/cache && \\
-                        sudo chmod -R 775 storage bootstrap/cache && \\
                         php artisan config:cache && \\
                         php artisan route:cache && \\
                         php artisan view:cache && \\
