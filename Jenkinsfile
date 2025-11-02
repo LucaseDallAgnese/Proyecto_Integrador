@@ -32,7 +32,7 @@ pipeline {
         stage('Build Assets') {
             steps {
                 echo "Instalando dependencias de Node.js y construyendo assets..."
-                tool name: 'node-20', type: 'hudson.plugins.nodejs.tools.NodeJsInstallation'
+                //tool name: 'node-20', type: 'hudson.plugins.nodejs.tools.NodeJsInstallation'
                 // npm ci es la forma más segura en CI
                 sh 'npm ci' 
                 // npm run build genera el CSS y JS final en public/build
