@@ -1,45 +1,93 @@
-// ... (Stages Checkout, Build Assets, Deploy no cambiaron) ...
+pipeline {
+    agent any 
 
-// Etapa 4: Comandos finales (Remoto en el servidor web)
-stage('Post-Deploy') {
-    steps {
-        echo "Ejecutando comandos finales en el servidor web..."
-        sshagent([WEB_SERVER_CREDENTIAL_ID]) {
-            
-            // PASO 1: PERMISOS TEMPORALES 777 (Permite a Composer escribir)
-            sh """
-                ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && \\
-                chmod -R 777 storage bootstrap/cache'
-            """
-            
-            // PASO 2: COMANDOS DE LARAVEL (REINICIO y Ejecución)
-            sh """
-                ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && \\
-                
-                # ✨ AJUSTE FINAL: REINICIAR CON SYSTEMCTL (más estable que 'service')
-                # 1. Intentar iniciar PHP-FPM por si está caído (systemctl start)
-                sudo systemctl start php8.2-fpm.service 2>/dev/null || true && \\
-                # 2. Reiniciar los servicios para cargar el driver de MySQL (systemctl restart)
-                sudo systemctl restart php8.2-fpm.service && \\ 
-                sudo systemctl restart nginx.service && \\ 
-                
-                # COMANDOS DE LARAVEL
-                composer install --no-dev --optimize-autoloader && \\
-                php artisan config:cache && \\
-                php artisan route:cache && \\
-                php artisan view:cache && \\
-                php artisan migrate --force && \\
-                php artisan storage:link'
-            """
+    // Variables de entorno
+    environment {
+        WEB_SERVER = 'ubuntu@3.151.11.146'
+        WEB_SERVER_CREDENTIAL_ID = 'webserver-ssh' 
+        PROJECT_PATH = '/var/www/html/terastore'
+        GIT_REPO_URL = 'https://github.com/LucaseDallAgnese/Proyecto_Integrador.git'
+        GIT_CREDENTIAL_ID = 'github-token' 
+    }
 
-            // PASO 3: DEVOLVER LA PROPIEDAD Y PERMISOS (Seguridad)
-            sh """
-                ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && \\
-                sudo chown -R www-data:www-data storage bootstrap/cache && \\
-                sudo chmod -R 775 storage bootstrap/cache'
-            """
+    stages {
+        stage('Checkout') {
+            steps {
+                echo "Clonando el repositorio..."
+                cleanWs() 
+                git branch: 'Master', credentialsId: GIT_CREDENTIAL_ID, url: GIT_REPO_URL
+            }
+        }
+        
+        stage('Build Assets') {
+            steps {
+                echo "Instalando dependencias de Node.js y construyendo assets..."
+                sh '/bin/bash -c "npm install --force"' 
+                sh '/bin/bash -c "npm run build"'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo "Sincronizando archivos con el servidor web..."
+                sshagent([WEB_SERVER_CREDENTIAL_ID]) {
+                    // Sincroniza todo con rsync, deshabilitando la preservación de permisos de grupo/dueño (chgrp/chown)
+                    sh "rsync -avz --no-o --no-g --no-p -e 'ssh -o StrictHostKeyChecking=no' --exclude='.git/' --exclude='node_modules/' --exclude='resources/' ./ ${WEB_SERVER}:${PROJECT_PATH}/"
+                }
+            }
+        }
+
+        // Etapa 4: Comandos finales (Remoto en el servidor web)
+        stage('Post-Deploy') {
+            steps {
+                echo "Ejecutando comandos finales en el servidor web..."
+                sshagent([WEB_SERVER_CREDENTIAL_ID]) {
+                    
+                    // PASO 1: PERMISOS TEMPORALES 777 (Permite a Composer escribir y evita el error inicial)
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && \\
+                        chmod -R 777 storage bootstrap/cache'
+                    """
+                    
+                    // PASO 2: LARAVEL CORE (Composer, Cache, Migraciones)
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && \\
+                        composer install --no-dev --optimize-autoloader && \\
+                        php artisan config:cache && \\
+                        php artisan route:cache && \\
+                        php artisan view:cache && \\
+                        php artisan migrate --force && \\
+                        php artisan storage:link'
+                    """
+
+                    // PASO 3: DEVOLVER LA PROPIEDAD Y PERMISOS (Seguridad)
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && \\
+                        sudo chown -R www-data:www-data storage bootstrap/cache && \\
+                        sudo chmod -R 775 storage bootstrap/cache'
+                    """
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            echo "Limpiando el espacio de trabajo..."
+            cleanWs()
         }
     }
 }
+```
 
-// ... (Post-actions) ...
+### 3. ¡Tarea Manual Final!
+
+El *pipeline* ya no intentará reiniciar los servicios, **pero la migración seguirá fallando** hasta que el *driver* de MySQL se cargue.
+
+**DEBES HACER ESTO MANUALMENTE EN TU EC2:**
+
+```bash
+# EJECUTAR ESTO EN TU EC2
+sudo systemctl restart nginx.service
+# Y
+sudo systemctl restart php8.2-fpm.service 
