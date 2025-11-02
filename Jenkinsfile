@@ -5,7 +5,7 @@ pipeline {
     // Variables de entorno que debes CAMBIAR
     environment {
         // Usuario y IP de tu SERVIDOR WEB (el de la app)
-        WEB_SERVER = 'ubuntu@3.91.53.151'
+        WEB_SERVER = 'ubuntu@3.151.11.146'
         // El ID de la credencial SSH para el servidor web que creaste en Jenkins
         WEB_SERVER_CREDENTIAL_ID = 'webserver-ssh'
         // La ruta en el servidor web donde se desplegará el proyecto
