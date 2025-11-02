@@ -8,7 +8,7 @@ use App\Notifications\EnlaceRecuperacionPassword;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\Permission; // Línea que debes agregar
+use App\Models\Permission;
 
 class User extends Authenticatable
 {

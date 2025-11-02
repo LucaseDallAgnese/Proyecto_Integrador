@@ -29,16 +29,25 @@ class LoginController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            $token = $user->createToken('auth-token')->plainTextToken;
             
-            $guestCart = $request->session()->get('cart', []);
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'token' => $token,
+                    'user' => $user,
+                    'message' => 'Inicio de sesión exitoso'
+                ]);
+            }
 
+            $guestCart = $request->session()->get('cart', []);
             $request->session()->regenerate();
 
             if (!empty($guestCart)) {
                 $request->session()->put('cart', $guestCart);
             }
 
-            if (Auth::user()->rol == 'admin') {
+            if ($user->role === 'admin') {
                 return redirect()->intended('/admin/dashboard');
             }
 
