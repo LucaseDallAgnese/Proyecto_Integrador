@@ -50,7 +50,7 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && 
                         
-                        # REINICIO MANUAL NECESARIO: Estas líneas solo sirven si el servicio existe.
+                        # REINICIO: La última falla se debe a esto. Si falla, el driver no se carga.
                         sudo systemctl restart php8.2-fpm.service || true && 
                         sudo systemctl restart nginx.service || true &&
                         
@@ -83,10 +83,14 @@ pipeline {
 }
 ```
 
-## 🚀 Plan de Cierre (¡Ahora!)
+## 🚀 Cierre de Proyecto: Tu Tarea Final
+
+Ya resolviste la parte de Jenkins. El único problema es que el *driver* de MySQL no está activo en tu EC2.
 
 1.  **Sube este `Jenkinsfile` a GitHub.**
-2.  **¡Reinicia tu EC2!** Es la forma más rápida de cargar el *driver* de MySQL.
+2.  **Reinicia tu EC2 (¡Ahora!):** Esta es la forma más rápida y segura de forzar la carga de todos los *drivers* instalados.
+
     ```bash
+    # EJECUTAR ESTO EN TU EC2
     sudo reboot
     
