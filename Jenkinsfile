@@ -10,7 +10,6 @@ pipeline {
         WEB_SERVER_CREDENTIAL_ID = 'webserver-ssh' 
         // La ruta de despliegue en el servidor web
         PROJECT_PATH = '/var/www/html/terastore'
-        
         // --- Variables del Repositorio de Código ---
         GIT_REPO_URL = 'https://github.com/LucaseDallAgnese/Proyecto_Integrador.git'
         // El ID de la credencial de GitHub
@@ -30,6 +29,8 @@ pipeline {
         stage('Build Assets') {
             steps {
                 echo "Instalando dependencias de Node.js y construyendo assets..."
+                sh '/bin/bash -c "npm ci"'
+                sh '/bin/bash -c "npm run build"'
                 // Ejecución directa: Requiere Node.js y npm en el PATH de Jenkins.
                 sh 'npm ci' 
                 sh 'npm run build' 
