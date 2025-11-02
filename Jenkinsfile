@@ -27,21 +27,34 @@ pipeline {
                 git branch: 'Master', credentialsId: GIT_CREDENTIAL_ID, url: GIT_REPO_URL
             }
         }
+        
+        // Esto resuelve el error EBADPLATFORM al ejecutarlo en Linux (Jenkins), no en el servidor remoto.
+        stage('Build Assets') {
+            steps {
+                echo "Instalando dependencias de Node.js y construyendo assets..."
+                tool name: 'node-20', type: 'hudson.plugins.nodejs.tools.NodeJsInstallation'
+                // npm ci es la forma más segura en CI
+                sh 'npm ci' 
+                // npm run build genera el CSS y JS final en public/build
+                sh 'npm run build' 
+            }
+        }
 
-        // Etapa 2: Sincronizar los archivos con el servidor web
+        // Etapa 3: Sincronizar los archivos con el servidor web
         stage('Deploy') {
             steps {
                 echo "Sincronizando archivos con el servidor web..."
                 // Usar 'sshagent' con la credencial del servidor web
                 sshagent([WEB_SERVER_CREDENTIAL_ID]) {
-                    // rsync es más rápido que scp. Sincroniza todo excepto .git y node_modules
-                    sh "rsync -avz -e 'ssh -o StrictHostKeyChecking=no' --exclude='.git/' --exclude='node_modules/' ./ ${WEB_SERVER}:${PROJECT_PATH}/"
+                    // rsync es más rápido que scp. 
+                    // Se agrega la exclusión de node_modules/ y resources/js/css (ya están construidos)
+                    sh "rsync -avz -e 'ssh -o StrictHostKeyChecking=no' --exclude='.git/' --exclude='node_modules/' --exclude='resources/' ./ ${WEB_SERVER}:${PROJECT_PATH}/"
                 }
             }
         }
 
-        // Etapa 3: Comandos finales (en el servidor web)
-        // Aquí instalamos dependencias y corremos migraciones REMOTAMENTE
+        // Etapa 4: Comandos finales (en el servidor web)
+        // SOLO queda la instalación de dependencias de PHP y comandos de Laravel
         stage('Post-Deploy') {
             steps {
                 echo "Ejecutando comandos finales en el servidor web..."
@@ -50,8 +63,6 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && \\
                         composer install --no-dev --optimize-autoloader && \\
-                        npm ci --omit=dev && \\
-                        npm run build && \\
                         sudo chown -R www-data:www-data storage bootstrap/cache && \\
                         sudo chmod -R 775 storage bootstrap/cache && \\
                         php artisan config:cache && \\
