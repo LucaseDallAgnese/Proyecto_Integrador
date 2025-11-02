@@ -16,7 +16,8 @@ pipeline {
         WEB_SERVER = 'ubuntu@3.151.11.146'
         WEB_SERVER_CREDENTIAL_ID = 'webserver-ssh' 
         PROJECT_PATH = '/var/www/html/terastore'
-        GIT_REPO_URL = '[https://github.com/LucaseDallAgnese/Proyecto_Integrador.git](https://github.com/LucaseDallAgnese/Proyecto_Integrador.git)'
+        // 🛑 CORRECCIÓN CLAVE: La URL debe ser una cadena simple y limpia.
+        GIT_REPO_URL = 'https://github.com/LucaseDallAgnese/Proyecto_Integrador.git'
         GIT_CREDENTIAL_ID = 'github-token' 
     }
 
@@ -59,8 +60,6 @@ pipeline {
                     sh "ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && chmod -R 777 storage bootstrap/cache'"
                     
                     // PASO 2: LARAVEL CORE (Composer, Cache, Migraciones)
-                    // Se ha eliminado el comentario de Markdown y el cuerpo de la nota al inicio.
-                    // Se mantiene el reinicio del servicio PHP/Nginx por si hay problemas con drivers.
                     sh """
                         ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && 
                         
