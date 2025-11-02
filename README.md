@@ -59,3 +59,20 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+---
+
+## NOTE ABOUT BRANCHES
+
+This repository contains a special branch called `linux-fixes` used by the project owner to hold Linux-specific
+frontend build adjustments (Vite / npm). The default branch (`Master`) is kept clean so Windows users can
+work without those Linux-specific edits.
+
+If you are a collaborator and need to test or build locally on Linux, fetch and check out the branch:
+
+```bash
+git fetch origin
+git checkout linux-fixes
+```
+
+Otherwise, use `Master` as usual. Do NOT commit or push Linux-only changes to `Master` unless coordinated.
