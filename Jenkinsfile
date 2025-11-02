@@ -1,20 +1,31 @@
 pipeline {
-    agent any 
+    agent any
+
+    // 🆕 MEJORA: Define opciones globales para el pipeline
+    options {
+        // Ejecuta cleanWs() al inicio del pipeline para asegurar un entorno limpio antes del Checkout
+        // Esto reemplaza el 'cleanWs()' dentro del 'stage('Checkout')'
+        skipDefaultCheckout()
+        // Limpia el workspace después del pipeline (si falla o tiene éxito)
+        // Esto reemplaza el 'cleanWs()' en el 'post { always { ... } }'
+        // workspaceCleanup() 
+    }
 
     // Variables de entorno
     environment {
         WEB_SERVER = 'ubuntu@3.151.11.146'
         WEB_SERVER_CREDENTIAL_ID = 'webserver-ssh' 
         PROJECT_PATH = '/var/www/html/terastore'
-        GIT_REPO_URL = 'https://github.com/LucaseDallAgnese/Proyecto_Integrador.git'
+        GIT_REPO_URL = '[https://github.com/LucaseDallAgnese/Proyecto_Integrador.git](https://github.com/LucaseDallAgnese/Proyecto_Integrador.git)'
         GIT_CREDENTIAL_ID = 'github-token' 
     }
 
     stages {
         stage('Checkout') {
             steps {
-                echo "Clonando el repositorio..."
-                cleanWs() 
+                echo "Limpiando y clonando el repositorio..."
+                cleanWs() // Dejamos el cleanWs() aquí si no se usa la directiva options
+                // ⚠️ Nota: 'Master' generalmente debería ser 'main' o 'master' (minúsculas)
                 git branch: 'Master', credentialsId: GIT_CREDENTIAL_ID, url: GIT_REPO_URL
             }
         }
@@ -22,8 +33,9 @@ pipeline {
         stage('Build Assets') {
             steps {
                 echo "Instalando dependencias de Node.js y construyendo assets..."
-                sh '/bin/bash -c "npm install --force"' 
-                sh '/bin/bash -c "npm run build"'
+                // Usar 'sh' directamente es suficiente, no siempre es necesario el '/bin/bash -c'
+                sh 'npm install --force' 
+                sh 'npm run build'
             }
         }
 
@@ -47,14 +59,14 @@ pipeline {
                     sh "ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && chmod -R 777 storage bootstrap/cache'"
                     
                     // PASO 2: LARAVEL CORE (Composer, Cache, Migraciones)
+                    // Se ha eliminado el comentario de Markdown y el cuerpo de la nota al inicio.
+                    // Se mantiene el reinicio del servicio PHP/Nginx por si hay problemas con drivers.
                     sh """
                         ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && 
                         
-                        # REINICIO: La última falla se debe a esto. Si falla, el driver no se carga.
                         sudo systemctl restart php8.2-fpm.service || true && 
                         sudo systemctl restart nginx.service || true &&
                         
-                        # COMANDOS CORE DE LARAVEL
                         composer install --no-dev --optimize-autoloader && 
                         php artisan config:cache && 
                         php artisan route:cache && 
@@ -81,16 +93,3 @@ pipeline {
         }
     }
 }
-```
-
-## 🚀 Cierre de Proyecto: Tu Tarea Final
-
-Ya resolviste la parte de Jenkins. El único problema es que el *driver* de MySQL no está activo en tu EC2.
-
-1.  **Sube este `Jenkinsfile` a GitHub.**
-2.  **Reinicia tu EC2 (¡Ahora!):** Esta es la forma más rápida y segura de forzar la carga de todos los *drivers* instalados.
-
-    ```bash
-    # EJECUTAR ESTO EN TU EC2
-    sudo reboot
-    
