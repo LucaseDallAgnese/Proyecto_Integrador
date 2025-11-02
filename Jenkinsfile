@@ -50,9 +50,9 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && 
                         
-                        # ✨ REINICIO FINAL: Usamos 'service' para mayor compatibilidad de shell ✨
-                        sudo service php8.2-fpm restart && 
-                        sudo service nginx restart &&
+                        # REINICIO: Si el sistema falla, el operador debe reiniciar manualmente los servicios para cargar el driver de MySQL.
+                        sudo systemctl restart php8.2-fpm.service && 
+                        sudo systemctl restart nginx.service &&
                         
                         # COMANDOS CORE DE LARAVEL
                         composer install --no-dev --optimize-autoloader && 
@@ -83,13 +83,13 @@ pipeline {
 }
 ```
 
-### 2. Tarea Manual Final (Si Aún Falla)
+---
 
-Si este *pipeline* falla de nuevo con "Unit not found" o "Failed to restart", la **única solución** es que el *driver* de MySQL sea cargado manualmente en tu EC2:
+## 🚀 Último Intento (¡Manual y Automático!)
 
-**Opción de Falla del Driver:**
-1.  **Conéctate a tu EC2.**
-2.  **Reinicia el servidor EC2 completo** (ya que el `systemctl` está roto y un reinicio completo fuerza la carga de los *drivers*).
+1.  **Sube este `Jenkinsfile` al Canvas.**
+2.  **Reinicia los Servicios en tu EC2 (Manual):** Esto resuelve el error del *driver* de MySQL.
     ```bash
-    sudo reboot
+    sudo systemctl restart php8.2-fpm.service
+    sudo systemctl restart nginx.service
     
