@@ -11,9 +11,9 @@ pipeline {
         // La ruta en el servidor web donde se desplegará el proyecto
         PROJECT_PATH = '/var/www/html/terastore'
         // ¡¡¡CAMBIA ESTO por la URL SSH de tu repo!!!
-        GIT_REPO_URL = 'git@github.com:LucaseDallAgnese/Proyecto_Integrador.git'
+        GIT_REPO_URL = 'https://github.com/LucaseDallAgnese/Proyecto_Integrador.git'
         // El ID de la credencial de GitHub que creaste en Jenkins
-        GIT_CREDENTIAL_ID = 'github-deploy-key'
+        GIT_CREDENTIAL_ID = 'github-token'
     }
 
     stages {
