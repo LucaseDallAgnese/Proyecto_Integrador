@@ -1,66 +1,57 @@
 // Jenkinsfile
 pipeline {
-    agent any // Ejecutar en el servidor de Jenkins (tu PC)
+    agent any 
 
-    // Variables de entorno que debes CAMBIAR
+    // Variables de entorno
     environment {
-        // Usuario y IP de tu SERVIDOR WEB (el de la app)
+        // --- Variables de tu SERVIDOR WEB (EC2, Droplet, etc.) ---
         WEB_SERVER = 'ubuntu@3.151.11.146'
-        // El ID de la credencial SSH para el servidor web que creaste en Jenkins
-        WEB_SERVER_CREDENTIAL_ID = 'webserver-ssh'
-        // La ruta en el servidor web donde se desplegará el proyecto
+        // El ID de la credencial SSH para el servidor web (ej: ubuntu)
+        WEB_SERVER_CREDENTIAL_ID = 'webserver-ssh' 
+        // La ruta de despliegue en el servidor web
         PROJECT_PATH = '/var/www/html/terastore'
-        // ¡¡¡CAMBIA ESTO por la URL SSH de tu repo!!!
+        
+        // --- Variables del Repositorio de Código ---
         GIT_REPO_URL = 'https://github.com/LucaseDallAgnese/Proyecto_Integrador.git'
-        // El ID de la credencial de GitHub que creaste en Jenkins
-        GIT_CREDENTIAL_ID = 'github-token'
+        // El ID de la credencial de GitHub
+        GIT_CREDENTIAL_ID = 'github-token' 
     }
 
     stages {
-        // Etapa 1: Clonar el código desde GitHub
         stage('Checkout') {
             steps {
                 echo "Clonando el repositorio..."
-                // Borra el espacio de trabajo anterior para un build limpio
                 cleanWs() 
-                // Clona el repo usando la credencial
                 git branch: 'Master', credentialsId: GIT_CREDENTIAL_ID, url: GIT_REPO_URL
             }
         }
         
-        // Esto resuelve el error EBADPLATFORM al ejecutarlo en Linux (Jenkins), no en el servidor remoto.
+        // Etapa 2: Construir los assets de frontend en Jenkins (Donde es Linux)
         stage('Build Assets') {
             steps {
                 echo "Instalando dependencias de Node.js y construyendo assets..."
-                //tool name: 'node-20', type: 'hudson.plugins.nodejs.tools.NodeJsInstallation'
-                sh 'node -v'
-                // npm ci es la forma más segura en CI
+                // Ejecución directa: Requiere Node.js y npm en el PATH de Jenkins.
                 sh 'npm ci' 
-                // npm run build genera el CSS y JS final en public/build
                 sh 'npm run build' 
             }
         }
 
-        // Etapa 3: Sincronizar los archivos con el servidor web
+        // Etapa 3: Sincronizar (Deploy)
         stage('Deploy') {
             steps {
                 echo "Sincronizando archivos con el servidor web..."
-                // Usar 'sshagent' con la credencial del servidor web
                 sshagent([WEB_SERVER_CREDENTIAL_ID]) {
-                    // rsync es más rápido que scp. 
-                    // Se agrega la exclusión de node_modules/ y resources/js/css (ya están construidos)
+                    // Sincroniza todo, excluyendo archivos de desarrollo/configuración innecesarios.
                     sh "rsync -avz -e 'ssh -o StrictHostKeyChecking=no' --exclude='.git/' --exclude='node_modules/' --exclude='resources/' ./ ${WEB_SERVER}:${PROJECT_PATH}/"
                 }
             }
         }
 
-        // Etapa 4: Comandos finales (en el servidor web)
-        // SOLO queda la instalación de dependencias de PHP y comandos de Laravel
+        // Etapa 4: Comandos finales (Remoto en el servidor web)
         stage('Post-Deploy') {
             steps {
                 echo "Ejecutando comandos finales en el servidor web..."
                 sshagent([WEB_SERVER_CREDENTIAL_ID]) {
-                    // Comandos que se ejecutan REMOTAMENTE en el servidor web
                     sh """
                         ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && \\
                         composer install --no-dev --optimize-autoloader && \\
@@ -78,7 +69,6 @@ pipeline {
     }
     
     post {
-        // Al finalizar, sin importar si falla o no
         always {
             echo "Limpiando el espacio de trabajo..."
             cleanWs()
