@@ -30,10 +30,10 @@ pipeline {
             steps {
                 echo "Instalando dependencias de Node.js y construyendo assets..."
                 sh '/bin/bash -c "npm ci"'
-                sh '/bin/bash -c "npm run build"'
+                sh '/bin/bash -c "npm install --force'
                 // Ejecución directa: Requiere Node.js y npm en el PATH de Jenkins.
                 sh 'npm ci' 
-                sh 'npm run build' 
+                sh '/bin/bash -c "npm run build"'
             }
         }
 
