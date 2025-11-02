@@ -50,7 +50,7 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && 
                         
-                        # REINICIO: Si el sistema falla, el operador debe reiniciar manualmente los servicios para cargar el driver de MySQL.
+                        # ✨ REINICIO CON EL NOMBRE ENCONTRADO EN EL SERVIDOR ✨
                         sudo systemctl restart php8.2-fpm.service && 
                         sudo systemctl restart nginx.service &&
                         
@@ -83,12 +83,10 @@ pipeline {
 }
 ```
 
----
+### 2. Tarea Final (Manual y Automática)
 
-## 🚀 Último Intento (¡Manual y Automático!)
-
-1.  **Sube este `Jenkinsfile` al Canvas.**
-2.  **Reinicia los Servicios en tu EC2 (Manual):** Esto resuelve el error del *driver* de MySQL.
+1.  **Sube este `Jenkinsfile` a GitHub.**
+2.  **Reinicia los servicios en tu EC2 (Manual) una vez más:**
     ```bash
     sudo systemctl restart php8.2-fpm.service
     sudo systemctl restart nginx.service
