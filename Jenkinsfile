@@ -24,7 +24,7 @@ pipeline {
                 // Borra el espacio de trabajo anterior para un build limpio
                 cleanWs() 
                 // Clona el repo usando la credencial
-                git credentialsId: GIT_CREDENTIAL_ID, url: GIT_REPO_URL
+                git branch: 'Master', credentialsId: GIT_CREDENTIAL_ID, url: GIT_REPO_URL
             }
         }
 
