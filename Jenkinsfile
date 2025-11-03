@@ -1,94 +1,42 @@
 pipeline {
-    agent any
-
-    // 🆕 MEJORA: Define opciones globales para el pipeline
-    options {
-        // Ejecuta cleanWs() al inicio del pipeline para asegurar un entorno limpio antes del Checkout
-        // Esto reemplaza el 'cleanWs()' dentro del 'stage('Checkout')'
-        skipDefaultCheckout()
-        // Limpia el workspace después del pipeline (si falla o tiene éxito)
-        // Esto reemplaza el 'cleanWs()' en el 'post { always { ... } }'
-        // workspaceCleanup() 
-    }
-
-    // Variables de entorno
-    environment {
-        WEB_SERVER = 'ubuntu@3.151.11.146'
-        WEB_SERVER_CREDENTIAL_ID = 'webserver-ssh' 
-        PROJECT_PATH = '/var/www/html/terastore'
-        // 🛑 CORRECCIÓN CLAVE: La URL debe ser una cadena simple y limpia.
-        GIT_REPO_URL = 'https://github.com/LucaseDallAgnese/Proyecto_Integrador.git'
-        GIT_CREDENTIAL_ID = 'github-token' 
-    }
+    agent any // El pipeline principal corre en el agente por defecto
 
     stages {
         stage('Checkout') {
             steps {
-                echo "Limpiando y clonando el repositorio..."
-                cleanWs() // Dejamos el cleanWs() aquí si no se usa la directiva options
-                // ⚠️ Nota: 'Master' generalmente debería ser 'main' o 'master' (minúsculas)
-                git branch: 'Master', credentialsId: GIT_CREDENTIAL_ID, url: GIT_REPO_URL
+                echo 'Limpiando y clonando el repositorio...'
+                cleanWs()
+                git branch: 'Master', url: 'https://github.com/LucaseDallAgnese/Proyecto_Integrador.git'
             }
         }
-        
+
         stage('Build Assets') {
+            // --- ¡AQUÍ ESTÁ LA MAGIA! ---
+            // Esta etapa se ejecutará dentro de un contenedor "node:18-alpine"
+            agent {
+                docker { image 'node:18-alpine' }
+            }
+            // -----------------------------
             steps {
-                echo "Instalando dependencias de Node.js y construyendo assets..."
-                // Usar 'sh' directamente es suficiente, no siempre es necesario el '/bin/bash -c'
-                sh 'npm install --force' 
-                sh 'npm run build'
+                echo 'Instalando dependencias de Node.js y construyendo assets...'
+                sh 'npm install --force'
+                // Probablemente también quieras construir los assets, ¿verdad?
+                // sh 'npm run build' 
             }
         }
 
         stage('Deploy') {
+            // Esta etapa volverá a usar el agente 'any' (el principal)
             steps {
-                echo "Sincronizando archivos con el servidor web..."
-                sshagent([WEB_SERVER_CREDENTIAL_ID]) {
-                    // Sincroniza todo con rsync, deshabilitando la preservación de permisos de grupo/dueño (chgrp/chown)
-                    sh "rsync -avz --no-o --no-g --no-p -e 'ssh -o StrictHostKeyChecking=no' --exclude='.git/' --exclude='node_modules/' --exclude='resources/' ./ ${WEB_SERVER}:${PROJECT_PATH}/"
-                }
+                echo 'Iniciando despliegue...'
+                // Tus pasos de despliegue van aquí...
             }
         }
 
-        // Etapa 4: Comandos finales (Remoto en el servidor web)
-        stage('Post-Deploy') {
-            steps {
-                echo "Ejecutando comandos finales en el servidor web..."
-                sshagent([WEB_SERVER_CREDENTIAL_ID]) {
-                    
-                    // PASO 1: PERMISOS TEMPORALES 777
-                    sh "ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && chmod -R 777 storage bootstrap/cache'"
-                    
-                    // PASO 2: LARAVEL CORE (Composer, Cache, Migraciones)
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && 
-                        
-                        sudo systemctl restart php8.2-fpm.service || true && 
-                        sudo systemctl restart nginx.service || true &&
-                        
-                        composer install --no-dev --optimize-autoloader && 
-                        php artisan config:cache && 
-                        php artisan route:cache && 
-                        php artisan view:cache && 
-                        php artisan migrate --force && 
-                        php artisan storage:link'
-                    """
-
-                    // PASO 3: DEVOLVER LA PROPIEDAD Y PERMISOS (Seguridad)
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ${WEB_SERVER} 'cd ${PROJECT_PATH} && 
-                        sudo chown -R www-data:www-data storage bootstrap/cache && 
-                        sudo chmod -R 775 storage bootstrap/cache'
-                    """
-                }
-            }
-        }
+        // ...Tus otras etapas...
     }
     
     post {
-        always {
-            echo "Limpiando el espacio de trabajo..."
-            cleanWs()
-        }
+        // ...
     }
 }
