@@ -41,3 +41,4 @@ pipeline {
         echo 'Pipeline finalizado.'
     }
 }
+}
