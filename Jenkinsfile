@@ -1,44 +1,38 @@
 pipeline {
-    agent any // El pipeline principal corre en el agente por defecto
+    agent any // Corre todo en el agente principal de Jenkins (donde está Docker)
 
     stages {
         stage('Checkout') {
             steps {
-                echo 'Limpiando y clonando el repositorio...'
-                cleanWs()
+                echo 'Clonando repositorio...'
+                cleanWs() // Limpia el espacio de trabajo anterior
                 git branch: 'Master', url: 'https://github.com/LucaseDallAgnese/Proyecto_Integrador.git'
             }
         }
 
-        stage('Build Assets') {
-            // --- ¡AQUÍ ESTÁ LA MAGIA! ---
-            // Esta etapa se ejecutará dentro de un contenedor "node:18-alpine"
-            agent {
-                docker { image 'node:18-alpine' }
-            }
-            // -----------------------------
+        stage('Build & Deploy') {
             steps {
-                echo 'Instalando dependencias de Node.js y construyendo assets...'
-                sh 'npm install --force'
-                // Probablemente también quieras construir los assets, ¿verdad?
-                // sh 'npm run build' 
+                echo '1. Construyendo assets (JS/CSS)...'
+                // Esto corre 'npm install' DENTRO de un contenedor node,
+                // pero los archivos los guarda en el workspace actual de Jenkins.
+                docker.image('node:18-alpine').inside {
+                    sh 'npm install --force'
+                    // Probablemente también necesites construir tus assets:
+                    // sh 'npm run build' 
+                }
+
+                echo '2. Levantando la aplicación con Docker Compose...'
+                // Ahora que los assets existen, levantamos los servicios.
+                // -d = detached (en segundo plano)
+                // --build = Reconstruye tus imágenes (ej. 'app') si el Dockerfile cambió
+                sh 'docker-compose up -d --build'
             }
         }
-
-        stage('Deploy') {
-            // Esta etapa volverá a usar el agente 'any' (el principal)
-            steps {
-                echo 'Iniciando despliegue...'
-                // Tus pasos de despliegue van aquí...
-            }
-        }
-
-        // ...Tus otras etapas...
     }
-    
+
     post {
         always {
-        echo 'Pipeline finalizado.'
+            echo 'Pipeline finalizado.'
+        }
     }
-}
 }
